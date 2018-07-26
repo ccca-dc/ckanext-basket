@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import ckan.plugins.toolkit as tk
+import ckan.logic
+import ckan.lib.dictization as d
+from ckanext.basket.models import Basket, BasketAssociation
 
 from logging import getLogger
+
 log = getLogger(__name__)
+
 
 @ckan.logic.side_effect_free
 def basket_create(context, data_dict):
@@ -24,7 +29,13 @@ def basket_create(context, data_dict):
 
     # TODO auth.py
     #_check_access('basket_create', context, data_dict)
-    pass
+
+    basket = d.table_dict_save(data_dict, Basket, context)
+
+    if not context.get('defer_commit'):
+        model.repo.commit()
+
+    return basket.as_dict()
 
 
 @ckan.logic.side_effect_free
@@ -83,7 +94,19 @@ def basket_element_add(context, data_dict):
     :type element_id: string
     :returns:
     """
-    pass
+
+    model = context['model']
+    user = context['user']
+
+    # TODO auth.py
+    #_check_access('basket_element_add', context, data_dict)
+
+    basket_association = d.table_dict_save(data_dict, BasketAssociation, context)
+
+    if not context.get('defer_commit'):
+        model.repo.commit()
+
+    return basket_association.as_dict()
 
 
 @ckan.logic.side_effect_free

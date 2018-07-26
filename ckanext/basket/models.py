@@ -1,9 +1,9 @@
 import uuid
 import ckan.model.meta as meta
 from ckan.model.package import Package
-from ckan.model.meta import mapper
 from ckan.model.domain_object import DomainObject
 
+import vdm.sqlalchemy
 from sqlalchemy import Table, Column, MetaData, ForeignKey, types
 #from sqlalchemy.orm import mapper, relationship
 from sqlalchemy.orm import relationship, relation
@@ -30,7 +30,7 @@ class Basket(Base):
     __tablename__ = 'basket'
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
     user_id = Column('user_id', types.UnicodeText)
-    element_type = Column(types.UnicodeText, default="package")
+    element_type = Column(types.UnicodeText, default=u"package")
     children = relationship("BasketAssociation")
 
     def __init__(self, **kwargs):
@@ -39,12 +39,12 @@ class Basket(Base):
 
     @classmethod
     def get(cls, basket_id):
-        q = model.Session.query(Basket).filter(Basket.name == basket_id)
-        obj = q.first()
-        if not obj:
-            q = model.Session.query(Basket).filter(Basket.id == basket_id)
-            obj = q.first()
-        return obj
+        if not basket_id:
+            return None
+
+        basket = meta.Session.query(cls).get(basket_id)
+
+        return basket
 
     def as_dict(self, with_terms=False):
         return {
@@ -62,6 +62,17 @@ class BasketAssociation(Base):
     basket_id = Column(types.UnicodeText, ForeignKey(Basket.id), primary_key=True)
     package_id = Column(types.UnicodeText, ForeignKey(Package.id), primary_key=True)
     child = relationship(Package)
+    # TODO change child to element
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def as_dict(self, with_terms=False):
+        return {
+            'basket_id': self.basket_id,
+            'package_id': self.package_id
+        }
 
 
 def init_tables():
