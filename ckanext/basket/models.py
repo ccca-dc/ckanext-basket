@@ -30,6 +30,7 @@ class Basket(Base):
     __tablename__ = 'basket'
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
     user_id = Column('user_id', types.UnicodeText)
+    element_type = Column(types.UnicodeText, default="package")
     children = relationship("BasketAssociation")
 
     def __init__(self, **kwargs):
