@@ -14,7 +14,7 @@ log = getLogger(__name__)
 def basket_create(context, data_dict):
     """Create a new basket
 
-    :param user_id: The id of the user to create the basket for (optional)
+    :param user_id: The id of the user to create the basket for (only admin)
     :type user_id: string
     :param element_type: The type of the basket elements (e.g. package, resource, subset) (optional)
     :type element_type: string
@@ -26,6 +26,9 @@ def basket_create(context, data_dict):
     if 'element_type' not in data_dict:
         data_dict['element_type'] = "package"
 
+    # TODO: only sysadmin
+    if 'user_id' not in data_dict:
+        data_dict['user_id'] = context['auth_user_obj'].id
 
     # TODO auth.py
     #_check_access('basket_create', context, data_dict)
@@ -70,7 +73,19 @@ def basket_show(context, data_dict):
     :type include_elements: boolean
     :returns:
     """
-    pass
+    model = context['model']
+    context['session'] = model.Session
+    basket_id = data_dict.get("basket_id")
+    import ipdb; ipdb.set_trace()
+    basket = Basket.get(basket_id)
+
+    if basket is None:
+        raise tk.ObjectNotFound
+
+
+    # _check_access('package_show', context, data_dict)
+
+    return basket.as_dict()
 
 
 @ckan.logic.side_effect_free

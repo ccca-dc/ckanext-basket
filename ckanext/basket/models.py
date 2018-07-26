@@ -31,7 +31,7 @@ class Basket(Base):
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
     user_id = Column('user_id', types.UnicodeText)
     element_type = Column(types.UnicodeText, default=u"package")
-    children = relationship("BasketAssociation")
+    packages = relationship("BasketAssociation")
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
@@ -50,9 +50,12 @@ class Basket(Base):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'children': self.children,
+            'packages': self.packages,
         }
 
+    # @property
+    # def packages_list(self):
+    #     return [package for package in self.packages]
 
 class BasketAssociation(Base):
     '''
@@ -61,7 +64,7 @@ class BasketAssociation(Base):
     __tablename__ = 'basket_association'
     basket_id = Column(types.UnicodeText, ForeignKey(Basket.id), primary_key=True)
     package_id = Column(types.UnicodeText, ForeignKey(Package.id), primary_key=True)
-    child = relationship(Package)
+    package = relationship(Package)
     # TODO change child to element
 
     def __init__(self, **kwargs):
@@ -81,3 +84,4 @@ def init_tables():
 
 def remove_tables():
     Basket.__table__.drop(model.meta.engine, checkfirst=False)
+    BasketAssociation.__table__.drop(model.meta.engine, checkfirst=False)
