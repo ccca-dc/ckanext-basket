@@ -17,6 +17,8 @@ class BasketPlugin(plugins.SingletonPlugin):
         actions = {'basket_create': action.basket_create,
                     'basket_element_add': action.basket_element_add,
                     'basket_purge': action.basket_purge,
+                    'basket_list': action.basket_list,
                     'basket_show': action.basket_show,
+                    'basket_element_list': action.basket_element_list,
                     'basket_element_remove': action.basket_element_remove}
         return actions

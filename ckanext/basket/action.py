@@ -3,6 +3,8 @@
 import ckan.plugins.toolkit as tk
 import ckan.logic
 import ckan.lib.dictization as d
+import ckan.authz as authz
+import ckan.lib.dictization.model_dictize as model_dictize
 from ckanext.basket.models import Basket, BasketAssociation
 
 from logging import getLogger
@@ -82,7 +84,16 @@ def basket_list(context, data_dict):
     :type user_id: string
     :returns:
     """
-    pass
+    model = context['model']
+    user = context['user']
+
+    user_id = authz.get_user_id_for_username(user, allow_none=True)
+    if not user_id:
+        return []
+
+    q = model.Session.query(Basket).filter(Basket.user_id == user_id)
+
+    return [d.table_dictize(basket, context) for basket in q.all()]
 
 
 @ckan.logic.side_effect_free
@@ -118,7 +129,24 @@ def basket_element_list(context, data_dict):
     :type id: string
     :returns:
     """
-    pass
+    model = context['model']
+
+    # _check_access('basket_element_list', context, data_dict)
+
+    id = _get_or_bust(data_dict, 'id')
+
+    q = model.Session.query(BasketAssociation, model.Package) \
+        .filter(BasketAssociation.basket_id == id) \
+        .join(model.Package)
+
+    pkgs = []
+    for basket_association, package in q.all():
+        pkgs.append(model_dictize.package_dictize(package, context))
+
+    if not pkgs:
+        return []
+
+    return pkgs
 
 
 @ckan.logic.side_effect_free
