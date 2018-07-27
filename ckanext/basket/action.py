@@ -11,7 +11,6 @@ from logging import getLogger
 
 log = getLogger(__name__)
 
-NotFound = ckan.logic.NotFound
 _get_or_bust = ckan.logic.get_or_bust
 _get_action = ckan.logic.get_action
 
@@ -61,7 +60,7 @@ def basket_purge(context, data_dict):
     basket = Basket.get(id)
 
     if basket is None:
-        raise NotFound('Basket was not found')
+        raise tk.ObjectNotFound('Basket was not found')
 
     # _check_access('basket_purge',context, data_dict)
 
@@ -87,9 +86,19 @@ def basket_list(context, data_dict):
     model = context['model']
     user = context['user']
 
-    user_id = authz.get_user_id_for_username(user, allow_none=True)
+    user_id = data_dict.get('user_id', authz.get_user_id_for_username(user, allow_none=True))
     if not user_id:
         return []
+
+    if data_dict.get('user_id'):
+        user = model.User.get(user_id)
+
+        if user is None:
+            raise tk.ObjectNotFound('User was not found')
+
+        user_id = user.id
+
+    # _check_access('basket_show', context, data_dict)
 
     q = model.Session.query(Basket).filter(Basket.user_id == user_id)
 
@@ -108,15 +117,17 @@ def basket_show(context, data_dict):
     """
     model = context['model']
     context['session'] = model.Session
-    basket_id = data_dict.get("id")
+
+    basket_id = _get_or_bust(data_dict, 'id')
+
     #import ipdb; ipdb.set_trace()
     basket = Basket.get(basket_id)
 
     if basket is None:
-        raise tk.ObjectNotFound
+        raise tk.ObjectNotFound('Basket was not found')
 
 
-    # _check_access('package_show', context, data_dict)
+    # _check_access('basket_show', context, data_dict)
 
     return basket.as_dict()
 
@@ -155,8 +166,8 @@ def basket_element_add(context, data_dict):
 
     :param basket_id: The id of the basket
     :type basket_id: string
-    :param element_id: The id of the element
-    :type element_id: string
+    :param package_id: The id of the package
+    :type package_id: string
     :returns:
     """
     model = context['model']
@@ -164,6 +175,20 @@ def basket_element_add(context, data_dict):
 
     # TODO auth.py
     #_check_access('basket_element_add', context, data_dict)
+
+    basket_id, package_id = _get_or_bust(data_dict, ['basket_id', 'package_id'])
+
+    basket = Basket.get(basket_id)
+
+    if basket is None:
+        raise tk.ObjectNotFound('Basket was not found.')
+
+    package = model.Package.get(package_id)
+
+    if package is None:
+        raise tk.ObjectNotFound('Package was not found.')
+
+    data_dict['package_id'] = package.id
 
     basket_association = d.table_dict_save(data_dict, BasketAssociation, context)
 
@@ -189,13 +214,13 @@ def basket_element_remove(context, data_dict):
 
     basket = Basket.get(basket_id)
     if not basket:
-        raise NotFound('Basket was not found.')
+        raise tk.ObjectNotFound('Basket was not found.')
 
     pkg = model.Package.get(package_id)
     if not pkg:
-        raise NotFound('Basket was not found.')
+        raise tk.ObjectNotFound('Package was not found.')
 
-    # _check_access('member_delete', context, data_dict)
+    # _check_access('basket_element_remove', context, data_dict)
 
     basket_association = model.Session.query(BasketAssociation).\
                         filter(BasketAssociation.basket_id == basket.id).\
@@ -206,5 +231,3 @@ def basket_element_remove(context, data_dict):
         # rev.message = _(u'REST API: Delete Member: %s') % obj_id
         basket_association.delete()
         model.repo.commit()
-
-    pass
