@@ -25,18 +25,19 @@ def basket_create(context, data_dict):
     :type element_type: string
     :returns:
     """
+    tk.check_access('basket_create', context, data_dict)
     model = context['model']
     user = context['user']
 
+    user_dct = tk.get_action("user_show")(context,{"id": user})
+
+    # Default element_type
     if 'element_type' not in data_dict:
         data_dict['element_type'] = "package"
 
-    # TODO: only sysadmin
-    if 'user_id' not in data_dict:
-        data_dict['user_id'] = context['auth_user_obj'].id
-
-    # TODO auth.py
-    #_check_access('basket_create', context, data_dict)
+    # Sysadmins are allowed to pass user_id
+    if 'user_id' not in data_dict or not user.get("sysadmin"):
+        data_dict['user_id'] = user_dct.get('id')
 
     basket = d.table_dict_save(data_dict, Basket, context)
 
@@ -54,6 +55,7 @@ def basket_purge(context, data_dict):
     :type id: string
     :returns:
     """
+    tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
     id = _get_or_bust(data_dict, 'id')
 
@@ -61,8 +63,6 @@ def basket_purge(context, data_dict):
 
     if basket is None:
         raise tk.ObjectNotFound('Basket was not found')
-
-    # _check_access('basket_purge',context, data_dict)
 
     basket_associations = model.Session.query(BasketAssociation) \
                    .filter(BasketAssociation.basket_id == id)
@@ -79,10 +79,11 @@ def basket_purge(context, data_dict):
 def basket_list(context, data_dict):
     """List all baskets for user
 
-    :param user_id: The id of the user to create the basket for (optional)
+    :param user_id: The id of the user for whom to list the baskets (only admin)
     :type user_id: string
     :returns:
     """
+    tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
     user = context['user']
 
@@ -97,8 +98,6 @@ def basket_list(context, data_dict):
             raise tk.ObjectNotFound('User was not found')
 
         user_id = user.id
-
-    # _check_access('basket_show', context, data_dict)
 
     q = model.Session.query(Basket).filter(Basket.user_id == user_id)
 
@@ -115,19 +114,16 @@ def basket_show(context, data_dict):
     :type include_elements: boolean
     :returns:
     """
+    tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
     context['session'] = model.Session
 
     basket_id = _get_or_bust(data_dict, 'id')
 
-    #import ipdb; ipdb.set_trace()
     basket = Basket.get(basket_id)
 
     if basket is None:
         raise tk.ObjectNotFound('Basket was not found')
-
-
-    # _check_access('basket_show', context, data_dict)
 
     return basket.as_dict()
 
@@ -140,9 +136,8 @@ def basket_element_list(context, data_dict):
     :type id: string
     :returns:
     """
+    tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
-
-    # _check_access('basket_element_list', context, data_dict)
 
     id = _get_or_bust(data_dict, 'id')
 
@@ -170,11 +165,9 @@ def basket_element_add(context, data_dict):
     :type package_id: string
     :returns:
     """
+    tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
     user = context['user']
-
-    # TODO auth.py
-    #_check_access('basket_element_add', context, data_dict)
 
     basket_id, package_id = _get_or_bust(data_dict, ['basket_id', 'package_id'])
 
@@ -208,6 +201,7 @@ def basket_element_remove(context, data_dict):
     :type package_id: string
     :returns:
     """
+    tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
 
     basket_id, package_id = _get_or_bust(data_dict, ['basket_id', 'package_id'])
@@ -219,8 +213,6 @@ def basket_element_remove(context, data_dict):
     pkg = model.Package.get(package_id)
     if not pkg:
         raise tk.ObjectNotFound('Package was not found.')
-
-    # _check_access('basket_element_remove', context, data_dict)
 
     basket_association = model.Session.query(BasketAssociation).\
                         filter(BasketAssociation.basket_id == basket.id).\
