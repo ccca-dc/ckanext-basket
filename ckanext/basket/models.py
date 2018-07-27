@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship, relation
 from sqlalchemy.ext.declarative import declarative_base
 
 import ckan.model as model
+import ckan.model.domain_object as domain_object
 import ckan.model.types as ckan_types
 from ckan.lib.base import *
 
@@ -23,7 +24,8 @@ def make_uuid():
     return unicode(uuid.uuid4())
 
 
-class Basket(Base):
+class Basket(Base,
+            domain_object.DomainObject):
     """
     Contains the detail about a specific basket which will contain BasketElements
     """
@@ -50,14 +52,16 @@ class Basket(Base):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'packages': self.packages,
+            'element_type': self.element_type,
+            'packages': [pkg.package_id for pkg in self.packages],
         }
 
     # @property
     # def packages_list(self):
     #     return [package for package in self.packages]
 
-class BasketAssociation(Base):
+class BasketAssociation(Base,
+                        domain_object.DomainObject):
     '''
     A many-many relationship between baskets and packages
     '''
@@ -71,11 +75,11 @@ class BasketAssociation(Base):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def as_dict(self, with_terms=False):
-        return {
-            'basket_id': self.basket_id,
-            'package_id': self.package_id
-        }
+    # def as_dict(self, with_terms=False):
+    #     return {
+    #         'basket_id': self.basket_id,
+    #         'package_id': self.package_id
+    #     }
 
 
 def init_tables():

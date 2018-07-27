@@ -16,5 +16,6 @@ class BasketPlugin(plugins.SingletonPlugin):
     def get_actions(self):
         actions = {'basket_create': action.basket_create,
                     'basket_element_add': action.basket_element_add,
+                    'basket_purge': action.basket_purge,
                     'basket_show': action.basket_show}
         return actions

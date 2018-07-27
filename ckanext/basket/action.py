@@ -9,6 +9,10 @@ from logging import getLogger
 
 log = getLogger(__name__)
 
+NotFound = ckan.logic.NotFound
+_get_or_bust = ckan.logic.get_or_bust
+_get_action = ckan.logic.get_action
+
 
 @ckan.logic.side_effect_free
 def basket_create(context, data_dict):
@@ -49,7 +53,25 @@ def basket_purge(context, data_dict):
     :type id: string
     :returns:
     """
-    pass
+    model = context['model']
+    id = _get_or_bust(data_dict, 'id')
+
+    basket = Basket.get(id)
+
+    if basket is None:
+        raise NotFound('Basket was not found')
+
+    # _check_access('basket_purge',context, data_dict)
+
+    basket_associations = model.Session.query(BasketAssociation) \
+                   .filter(BasketAssociation.basket_id == id)
+    if basket_associations.count() > 0:
+        for ba in basket_associations.all():
+            ba.purge()
+
+    basket.purge()
+
+    model.repo.commit()
 
 
 @ckan.logic.side_effect_free
@@ -75,8 +97,8 @@ def basket_show(context, data_dict):
     """
     model = context['model']
     context['session'] = model.Session
-    basket_id = data_dict.get("basket_id")
-    import ipdb; ipdb.set_trace()
+    basket_id = data_dict.get("id")
+    #import ipdb; ipdb.set_trace()
     basket = Basket.get(basket_id)
 
     if basket is None:
