@@ -131,7 +131,6 @@ def basket_element_add(context, data_dict):
     :type element_id: string
     :returns:
     """
-
     model = context['model']
     user = context['user']
 
@@ -152,8 +151,32 @@ def basket_element_remove(context, data_dict):
 
     :param basket_id: The id of the basket
     :type basket_id: string
-    :param element_id: The id of the element
-    :type element_id: string
+    :param package_id: The id of the package
+    :type package_id: string
     :returns:
     """
+    model = context['model']
+
+    basket_id, package_id = _get_or_bust(data_dict, ['basket_id', 'package_id'])
+
+    basket = Basket.get(basket_id)
+    if not basket:
+        raise NotFound('Basket was not found.')
+
+    pkg = model.Package.get(package_id)
+    if not pkg:
+        raise NotFound('Basket was not found.')
+
+    # _check_access('member_delete', context, data_dict)
+
+    basket_association = model.Session.query(BasketAssociation).\
+                        filter(BasketAssociation.basket_id == basket.id).\
+                        filter(BasketAssociation.package_id == pkg.id).first()
+    if basket_association:
+        # rev = model.repo.new_revision()
+        # rev.author = context.get('user')
+        # rev.message = _(u'REST API: Delete Member: %s') % obj_id
+        basket_association.delete()
+        model.repo.commit()
+
     pass
