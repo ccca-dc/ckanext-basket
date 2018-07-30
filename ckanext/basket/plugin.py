@@ -6,6 +6,7 @@ class BasketPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IAuthFunctions, inherit=True)
+    plugins.implements(plugins.IRoutes, inherit=True)
 
     # IConfigurer
     def update_config(self, config_):
@@ -37,3 +38,12 @@ class BasketPlugin(plugins.SingletonPlugin):
             'basket_element_remove': auth.basket_element_remove,
             'basket_owner_only': auth.basket_owner_only
         }
+
+    # IRoutes
+    def before_map(self, map):
+        # About pages
+        map.connect('basket_index', '/basket',
+                    controller='ckanext.basket.controllers.basket:BasketController',
+                    action='index')
+
+        return map

@@ -31,6 +31,7 @@ class Basket(Base,
     """
     __tablename__ = 'basket'
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
+    name = Column('name', types.UnicodeText)
     user_id = Column('user_id', types.UnicodeText)
     element_type = Column(types.UnicodeText, default=u"package")
     packages = relationship("BasketAssociation")
