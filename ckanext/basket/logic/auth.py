@@ -4,6 +4,7 @@ from ckan.common import _
 
 from ckanext.basket.models import Basket, BasketAssociation
 
+
 @tk.auth_disallow_anonymous_access
 def basket_create(context, data_dict):
     """
@@ -14,6 +15,7 @@ def basket_create(context, data_dict):
     """
     return {'success': True}
 
+
 @tk.auth_disallow_anonymous_access
 def basket_purge(context, data_dict):
     """
@@ -23,6 +25,7 @@ def basket_purge(context, data_dict):
     There is a shortcut where this will not be called for sysadmins
     """
     return {'success': True}
+
 
 @tk.auth_disallow_anonymous_access
 def basket_list(context, data_dict):
@@ -35,13 +38,14 @@ def basket_list(context, data_dict):
     user = context['user']
     user_dct = tk.get_action("user_show")(context,{"id": user})
 
-    # Only Sysadmins are allowed to pass user_id
-    if data_dict.get('user_id') and not user_dct.get("sysadmin"):
+    # only sysadmins can create baskets for other users
+    if data_dict.get('user_id') != user_dct['id']:
         return {'success': False,
                 'msg': _('User %s not authorized to list baskets') %
                         (str(user))}
 
     return {'success': True}
+
 
 @tk.auth_disallow_anonymous_access
 def basket_show(context, data_dict):
@@ -53,6 +57,7 @@ def basket_show(context, data_dict):
     """
     return {'success': True}
 
+
 @tk.auth_disallow_anonymous_access
 def basket_element_list(context, data_dict):
     """
@@ -62,6 +67,7 @@ def basket_element_list(context, data_dict):
     There is a shortcut where this will not be called for sysadmins
     """
     return {'success': True}
+
 
 @tk.auth_disallow_anonymous_access
 def basket_element_add(context, data_dict):
@@ -73,6 +79,7 @@ def basket_element_add(context, data_dict):
     """
     return {'success': True}
 
+
 @tk.auth_disallow_anonymous_access
 def basket_element_remove(context, data_dict):
     """
@@ -82,6 +89,7 @@ def basket_element_remove(context, data_dict):
     There is a shortcut where this will not be called for sysadmins
     """
     return {'success': True}
+
 
 @tk.auth_disallow_anonymous_access
 def basket_owner_only(context, data_dict):

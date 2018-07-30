@@ -35,9 +35,12 @@ def basket_create(context, data_dict):
     if 'element_type' not in data_dict:
         data_dict['element_type'] = "package"
 
-    # Sysadmins are allowed to pass user_id
-    if 'user_id' not in data_dict or not user.get("sysadmin"):
+    # sysadmins are allowed to pass user_id
+    if 'user_id' not in data_dict or not user_dct.get("sysadmin"):
         data_dict['user_id'] = user_dct.get('id')
+    else:
+        # check if given user exists
+        data_dict['user_id'] = authz.get_user_id_for_username(data_dict['user_id'], allow_none=True)
 
     basket = d.table_dict_save(data_dict, Basket, context)
 
