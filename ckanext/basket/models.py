@@ -52,6 +52,7 @@ class Basket(Base,
     def as_dict(self, with_terms=False):
         return {
             'id': self.id,
+            'name': self.name,
             'user_id': self.user_id,
             'element_type': self.element_type,
             'packages': [pkg.package_id for pkg in self.packages],

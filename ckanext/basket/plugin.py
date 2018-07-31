@@ -45,5 +45,8 @@ class BasketPlugin(plugins.SingletonPlugin):
         map.connect('basket_index', '/basket',
                     controller='ckanext.basket.controllers.basket:BasketController',
                     action='index')
+        map.connect('basket_read', '/basket/{id}',
+                    controller='ckanext.basket.controllers.basket:BasketController',
+                    action='read')
 
         return map

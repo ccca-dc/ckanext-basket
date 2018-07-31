@@ -1,0 +1,136 @@
+{% resource 'ccca/livicons' %}
+
+{% extends "page.html" %}
+
+{% block subtitle %}{{ c.basket_dict.name }}{% endblock %}
+
+{% block breadcrumb_content %}
+  <li>{% link_for _('Baskets'), controller='ckanext.basket.controllers.basket:BasketController', action='index' %}</li>
+  <li class="active">{% link_for c.basket_dict.name, controller='ckanext.basket.controllers.basket:BasketController', action='read', id=c.basket_dict.id %}</li>
+{% endblock %}
+
+{% block pre_primary %}
+  <h1 class="heading">
+    {{ c.basket_dict.name }}
+    <span class="livicon-evo" data-options="
+        name: box.svg;
+        eventOn: grandparent;
+        drawOnViewport: true
+    "></span>
+   </h1>
+
+{% endblock %}
+
+{% block primary %}
+  <div class="primary col-md-12">
+    {% block primary_content %}
+      <article class="module">
+        {% block page_header %}
+          <header class="module-content">
+            {% if self.content_action() | trim %}
+              <div class="content_action">
+                {% block content_action %}
+                    {% if h.check_access('group_update', {'id': c.basket_dict.id}) %}
+                      {% link_for _('Manage'), controller='ckanext.basket.controllers.basket:BasketController', action='edit', id=c.basket_dict.id, class_='btn', icon='wrench' %}
+                    {% endif %}
+                {% endblock %}
+              </div>
+            {% endif %}
+            <ul class="nav nav-tabs">
+              {% block content_primary_nav %}{% endblock %}
+            </ul>
+          </header>
+        {% endblock %}
+        <div class="module-content">
+          {% if self.page_primary_action() | trim %}
+            <div class="page_primary_action">
+              {% block page_primary_action %}{% endblock %}
+            </div>
+          {% endif %}
+          {% block primary_content_inner %}
+          {% block packages_list %}
+            {% if c.packages %}
+            <form method="POST" data-module="basic-form">
+             <table class="table table-hover table-edit-hover" data-module="table-selectable-rows">
+               <col width="8">
+               <col width="120">
+               <thead>
+                 <tr class="active">
+                   <th style="text-align: center; vertical-align: middle;"></th>
+                   <th class="table-actions">
+                     <div class="btn-group">
+                         <button name="bulk_action.add" value="delete" class="btn btn-success" type="submit">
+                           <span class="livicon-evo" data-options="
+                               name: cloud-download.svg;
+                               size: 30px;
+                               style: lines;
+                               strokeColor: #fff;
+                               eventOn: parent">
+                           </span>
+                           {{ _('Export') }}
+                         </button>
+                       <button name="bulk_action.delete" value="delete" class="btn btn-danger" type="submit">
+                           <span class="livicon-evo" data-options="
+                               name: box-extract.svg;
+                               size: 30px;
+                                style: lines;
+                                strokeColor: #fff;
+                                eventOn: parent">
+                           </span>
+                         {{ _('Delete') }}
+                       </button>
+                     </div>
+                   </th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {% for package in c.packages %}
+                   {% set truncate = truncate or 180 %}
+                   {% set truncate_title = truncate_title or 80 %}
+                   {% set title = package.title or package.name %}
+                   {% set notes = h.markdown_extract(package.notes, extract_length=truncate) %}
+                   <tr>
+                     <td style="text-align: center;">
+                       <h3><input type="checkbox" name="dataset_{{ package.id }}"></h3>
+                     </td>
+                     <td>
+                       <h3 class="dataset-heading">
+                            {% if package.private %}
+                              <span class="label label-default">
+                                <i class="icon-lock"></i>
+                                {{ _('Private') }}
+                              </span>
+                            {% endif %}
+                            {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
+                            {% if package.get('state', '').startswith('draft') %}
+                              <span class="label label-info">{{ _('Draft') }}</span>
+                            {% elif package.get('state', '').startswith('deleted') %}
+                              <span class="label label-important">{{ _('Deleted') }}</span>
+                            {% endif %}
+                            {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
+                        </h3>
+                     </td>
+                   </tr>
+                 {% endfor %}
+               </tbody>
+             </table>
+            </form>
+            {% endif %}
+          {% endblock %}
+          {% endblock %}
+        </div>
+      </article>
+    {% endblock %}
+</div>
+{% endblock %}
+
+ {#}{% block content_primary_nav %}
+  {{ h.build_nav_icon('group_read', _('Datasets'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('group_activity', _('Activity Stream'), id=c.group_dict.name, offset=0) }}
+  {{ h.build_nav_icon('group_about', _('About'), id=c.group_dict.name) }}
+{% endblock %}{#}
+
+{#}{% block links %}
+  {{ super() }}
+  {% include "group/snippets/feeds.html" %}
+{% endblock %}{#}
