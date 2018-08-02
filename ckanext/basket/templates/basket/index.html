@@ -1,3 +1,5 @@
+{% resource 'ccca/livicons' %}
+
 {% extends "page.html" %}
 
 {% block subtitle %}{{ _('Baskets') }}{% endblock %}
@@ -15,7 +17,7 @@
         <div class="module-content">
             <div class="page_primary_action">
                 {% if h.check_access('basket_create') %}
-                  {% link_for _('Add Basket'), controller='group', action='new', class_='btn btn-success pull-right', icon='plus-sign-alt' %}
+                  {% link_for _('Add Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='new', class_='btn btn-success pull-right', icon='plus-sign-alt' %}
                 {% endif %}
             </div>
         {% block primary_content_inner %}

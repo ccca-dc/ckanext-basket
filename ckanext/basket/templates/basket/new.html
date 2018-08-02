@@ -1,0 +1,57 @@
+{% resource 'ccca/livicons' %}
+
+{% extends "page.html" %}
+
+{% block breadcrumb_content %}
+  <li>{{ h.nav_link(_('Baskets'), controller='ckanext.basket.controllers.basket:BasketController', action='index') }}</li>
+  <li class="active">{% block breadcrumb_link %}{{ h.nav_link(_('Add a Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='new') }}{% endblock %}</li>
+{% endblock %}
+
+{#}{% block content_action %}
+  {% link_for _('View'), controller='ckanext.basket.controllers.basket:BasketController', action='read', id=c.basket_dict.name, class_='btn', icon='eye-open' %}
+{% endblock %}{#}
+
+{#}{% block content_primary_nav %}
+  {{ h.build_nav_icon('group_edit', _('Edit'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('group_members', _('Members'), id=c.group_dict.name) }}
+{% endblock %}{#}
+
+{% block primary %}
+  <div class="primary col-md-12">
+    {% block primary_content %}
+      <article class="module">
+        {% block page_header %}
+        {% endblock %}
+        <div class="module-content">
+          {% if self.page_primary_action() | trim %}
+            <div class="page_primary_action">
+              {% block page_primary_action %}{% endblock %}
+            </div>
+          {% endif %}
+          {% block primary_content_inner %}
+            <h1 class="{% block page_heading_class %}page-heading{% endblock %}">{% block page_heading %}{{ _('Create a Basket') }}{% endblock %}
+                <span class="livicon-evo" data-options="
+                    name: box-add.svg;
+                    eventOn: grandparent;
+                    drawOnViewport: true
+                "></span>
+            </h1>
+            {% block form %}
+              {% include "basket/basket_form.html" %}
+             {#} {{ c.form | safe }}{#}
+            {% endblock %}
+          {% endblock %}
+        </div>
+      </article>
+    {% endblock %}
+</div>
+{% endblock %}
+
+
+
+{% block subtitle %}{{ _('Create a Basket') }}{% endblock %}
+
+ {#}{% block breadcrumb_link %}{{ h.nav_link(_('Create a Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='edit', id=c.basket.id) }}{% endblock %}{#}
+
+{% block secondary_content %}
+{% endblock %}

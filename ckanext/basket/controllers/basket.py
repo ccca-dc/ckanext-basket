@@ -16,12 +16,14 @@ import ckan.model as model
 import ckan.authz as authz
 import ckan.lib.plugins
 import ckan.plugins as plugins
+import ckan.plugins.toolkit as tk
 from ckan.common import OrderedDict, c, g, request, _
 
 log = logging.getLogger(__name__)
 
 render = base.render
 abort = base.abort
+redirect = base.redirect
 
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
@@ -50,7 +52,7 @@ class BasketController(base.BaseController):
         q = c.q = request.params.get('q', '')
         sort_by = c.sort_by_selected = request.params.get('sort')
         try:
-            plugins.toolkit.check_access('basket_list', context, {})
+            tk.check_access('basket_list', context, {})
         except NotAuthorized:
             abort(403, _('Not authorized to see this page'))
 
@@ -66,7 +68,7 @@ class BasketController(base.BaseController):
                 'q': q,
                 'sort': sort_by,
             }
-            global_results = plugins.toolkit.get_action('basket_list')(
+            global_results = tk.get_action('basket_list')(
                 context, data_dict_global_results)
         except ValidationError as e:
             if e.error_dict and e.error_dict.get('message'):
@@ -78,7 +80,7 @@ class BasketController(base.BaseController):
             # return render(self._index_template(group_type),
             #               extra_vars={'group_type': group_type})
 
-        page_results = plugins.toolkit.get_action('basket_list')(context, {})
+        page_results = tk.get_action('basket_list')(context, {})
 
         c.page = h.Page(
             collection=global_results,
@@ -88,7 +90,8 @@ class BasketController(base.BaseController):
         )
 
         c.page.items = page_results
-        return plugins.toolkit.render('basket/index.html', {'title': 'Baskets'})
+        # import ipdb; ipdb.set_trace()
+        return tk.render('basket/index.html', {'title': 'Baskets'})
 
     def read(self, id, limit=20):
 
@@ -103,11 +106,57 @@ class BasketController(base.BaseController):
             # Do not query for the group datasets when dictizing, as they will
             # be ignored and get requested on the controller anyway
             # data_dict['include_datasets'] = False
-            c.basket_dict = plugins.toolkit.get_action('basket_show')(context, data_dict)
-            c.packages = plugins.toolkit.get_action('basket_element_list')(context, data_dict)
+            c.basket_dict = tk.get_action('basket_show')(context, data_dict)
+            c.packages = tk.get_action('basket_element_list')(context, data_dict)
             # c.group = context['group']
         except (NotFound, NotAuthorized):
             abort(404, _('Basket not found'))
 
         # self._read(id, limit, group_type)
-        return plugins.toolkit.render('basket/read.html', {'title': 'Basket'})
+        return tk.render('basket/read.html', {'title': 'Basket'})
+
+    def new(self, data=None, errors=None, error_summary=None):
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user,
+                   'save': 'save' in request.params}
+
+        try:
+            tk.check_access('basket_create', context)
+        except NotAuthorized:
+            abort(403, _('Unauthorized to create a basket'))
+
+        if context['save'] and not data and request.method == 'POST':
+            return self._save_new(context)
+
+        data = data or {}
+
+        errors = errors or {}
+        error_summary = error_summary or {}
+        vars = {'data': data, 'errors': errors,
+                'error_summary': error_summary, 'action': 'new'}
+
+        # self._setup_template_variables(context, data, group_type=group_type)
+        return tk.render('basket/new.html', vars)
+
+    def _save_new(self, context):
+        try:
+            data_dict = clean_dict(dict_fns.unflatten(
+                tuplize_dict(parse_params(request.params))))
+            context['message'] = data_dict.get('log_message', '')
+            data_dict['user_id'] = c.user
+            basket = tk.get_action('basket_create')(context, data_dict)
+
+            # Redirect to the new basket
+            url = h.url_for(controller='ckanext.basket.controllers.basket:BasketController',
+                action='read',
+                id=basket['id'])
+            redirect(url)
+
+        except (NotFound, NotAuthorized), e:
+            abort(404, _('Basket not found'))
+        except dict_fns.DataError:
+            abort(400, _(u'Integrity Error'))
+        except ValidationError, e:
+            errors = e.error_dict
+            error_summary = e.error_summary
+            return self.new(data_dict, errors, error_summary)
