@@ -18,6 +18,7 @@ class BasketPlugin(plugins.SingletonPlugin):
     def get_actions(self):
         import ckanext.basket.logic.action as action
         actions = {'basket_create': action.basket_create,
+                    'basket_update': action.basket_update,
                     'basket_element_add': action.basket_element_add,
                     'basket_purge': action.basket_purge,
                     'basket_list': action.basket_list,
@@ -31,6 +32,7 @@ class BasketPlugin(plugins.SingletonPlugin):
         import ckanext.basket.logic.auth as auth
         return {
             'basket_create': auth.basket_create,
+            'basket_update': auth.basket_update,
             'basket_purge': auth.basket_purge,
             'basket_list': auth.basket_list,
             'basket_show': auth.basket_show,
@@ -51,5 +53,11 @@ class BasketPlugin(plugins.SingletonPlugin):
         map.connect('basket_read', '/basket/{id}',
                     controller='ckanext.basket.controllers.basket:BasketController',
                     action='read')
+        map.connect('basket_edit', '/basket/edit/{id}',
+                    controller='ckanext.basket.controllers.basket:BasketController',
+                    action='edit')
+        map.connect('basket_delete', '/basket/delete/{id}',
+                    controller='ckanext.basket.controllers.basket:BasketController',
+                    action='delete')
 
         return map

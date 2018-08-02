@@ -5,6 +5,12 @@
         {% block heading %}
           <h3 class="dataset-heading">
             {% block heading_title %}
+            <span class="livicon-evo" data-options="
+                name: box.svg;
+                size: 40px;
+                eventOn: grandparent;
+                drawOnViewport: true
+            "></span>
               {{ h.link_to(basket.get('name', ''), h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='read', id=basket.id)) }}
             {% endblock %}
             {% block heading_meta %}

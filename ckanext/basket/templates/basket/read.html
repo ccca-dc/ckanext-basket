@@ -30,7 +30,7 @@
             {% if self.content_action() | trim %}
               <div class="content_action">
                 {% block content_action %}
-                    {% if h.check_access('group_update', {'id': c.basket_dict.id}) %}
+                    {% if h.check_access('basket_update', {'id': c.basket_dict.id}) %}
                       {% link_for _('Manage'), controller='ckanext.basket.controllers.basket:BasketController', action='edit', id=c.basket_dict.id, class_='btn', icon='wrench' %}
                     {% endif %}
                 {% endblock %}
@@ -115,6 +115,10 @@
                </tbody>
              </table>
             </form>
+            {% else %}
+          <p class="empty">
+            {{ _('There are currently no packages for this basket') }}.
+          </p>
             {% endif %}
           {% endblock %}
           {% endblock %}

@@ -6,7 +6,7 @@
     'element_type',
     id='field-element_type',
     label=_('Element Type'),
-    options=[{'name':'Packages', 'value': 'packages'},{'name': 'Subsets', 'value': 'subsets'}],
+    options=[{'name':'Package', 'value': 'package'},{'name': 'Subsets', 'value': 'subsets'}],
     selected=data[element_type],
     error=errors[element_type],
     classes=['control-medium'],
@@ -19,7 +19,7 @@
             {% block delete_button %}
             {% if h.check_access('basket_purge', {'id': data.id}) and action=='edit'  %}
             {% set locale = h.dump_json({'content': _('Are you sure you want to delete this Basket?')}) %}
-            <a class="btn btn-danger pull-left" href="{% url_for controller='group', action='delete', id=data.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}">
+            <a class="btn btn-danger pull-left" href="{% url_for controller='ckanext.basket.controllers.basket:BasketController', action='delete', id=data.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}">
                 <span class="livicon-evo" data-options="
                     name: box-delete.svg;
                     size: 30px;

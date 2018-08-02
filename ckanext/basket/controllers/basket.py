@@ -160,3 +160,84 @@ class BasketController(base.BaseController):
             errors = e.error_dict
             error_summary = e.error_summary
             return self.new(data_dict, errors, error_summary)
+
+    def edit(self, id, data=None, errors=None, error_summary=None):
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user,
+                   'save': 'save' in request.params,
+                   'for_edit': True
+                   }
+        data_dict = {'id': id}
+
+        if context['save'] and not data and request.method == 'POST':
+            return self._save_edit(id, context)
+
+        try:
+            old_data = tk.get_action('basket_show')(context, data_dict)
+            c.basketname = old_data.get('name')
+            data = data or old_data
+        except (NotFound, NotAuthorized):
+            abort(404, _('Basket not found'))
+
+        basket = context.get("basket")
+        c.basket = basket
+        c.basket_dict = tk.get_action('basket_show')(context, data_dict)
+
+        try:
+            tk.check_access('basket_update', context)
+        except NotAuthorized:
+            abort(403, _('User %r not authorized to edit %s') % (c.user, id))
+
+        errors = errors or {}
+        vars = {'data': data, 'errors': errors,
+                'error_summary': error_summary, 'action': 'edit'}
+
+        return tk.render('basket/edit.html', vars)
+
+    def _save_edit(self, id, context):
+        try:
+            data_dict = clean_dict(dict_fns.unflatten(
+                tuplize_dict(parse_params(request.params))))
+
+            data_dict['id'] = id
+            context['allow_partial_update'] = True
+            basket = tk.get_action('basket_update')(context, data_dict)
+
+            url = h.url_for(controller='ckanext.basket.controllers.basket:BasketController',
+                action='read',
+                id=basket['id'])
+            redirect(url)
+        except (NotFound, NotAuthorized), e:
+            abort(404, _('Basket not found'))
+        except dict_fns.DataError:
+            abort(400, _(u'Integrity Error'))
+        except ValidationError, e:
+            errors = e.error_dict
+            error_summary = e.error_summary
+            return self.edit(id, data_dict, errors, error_summary)
+
+    def delete(self, id):
+        if 'cancel' in request.params:
+            self._redirect_to_this_controller(action='edit', id=id)
+
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
+
+        try:
+            tk.check_access('basket_purge', context, {'id': id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to delete basket %s') % '')
+
+        try:
+            if request.method == 'POST':
+                tk.get_action('basket_purge')(context, {'id': id})
+                h.flash_notice(_('Basket has been deleted.'))
+                url = h.url_for(controller='ckanext.basket.controllers.basket:BasketController',
+                    action='index')
+                redirect(url)
+            c.group_dict = tk.get_action('basket_show')(context, {'id': id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to delete basket %s') % '')
+        except NotFound:
+            abort(404, _('Basket not found'))
+        return tk.render('basket/confirm_delete.html', vars)

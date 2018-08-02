@@ -17,6 +17,18 @@ def basket_create(context, data_dict):
 
 
 @tk.auth_disallow_anonymous_access
+def basket_update(context, data_dict):
+    """
+    Can the user create a basket. This is only available for
+    registered users.
+
+    There is a shortcut where this will not be called for sysadmins
+    """
+    return {'success': True}
+
+
+
+@tk.auth_disallow_anonymous_access
 def basket_purge(context, data_dict):
     """
     Can the user purge a basket. This is only available for
