@@ -93,7 +93,7 @@ class BasketController(base.BaseController):
         # import ipdb; ipdb.set_trace()
         return tk.render('basket/index.html', {'title': 'Baskets'})
 
-    def read(self, id, limit=20):
+    def read(self, id):
 
         context = {'model': model, 'session': model.Session,
                    'user': c.user}
@@ -102,18 +102,58 @@ class BasketController(base.BaseController):
         # unicode format (decoded from utf8)
         c.q = request.params.get('q', '')
 
+        # use different form names so that ie7 can be detected
+        form_names = set(["bulk_action.export", "bulk_action.delete"])
+        actions_in_form = set(request.params.keys())
+        actions = form_names.intersection(actions_in_form)
+
+        # If no action then just show the datasets
+        if actions:
+            #ie7 puts all buttons in form params but puts submitted one twice
+            for key, value in dict(request.params.dict_of_lists()).items():
+                if len(value) == 2:
+                    action = key.split('.')[-1]
+                    break
+            else:
+                #normal good browser form submission
+                action = actions.pop().split('.')[-1]
+
+            # process the action first find the datasets to perform the action on.
+            # they are prefixed by dataset_ in the form data
+            datasets = []
+            for param in request.params:
+                if param.startswith('dataset_'):
+                    datasets.append(param[8:])
+
+            action_functions = {
+                'export': 'basket_export',
+                'delete': 'basket_element_remove',
+            }
+
+            data_dict_action = {'packages': datasets, 'basket_id': data_dict['id']}
+
+            try:
+                get_action(action_functions[action])(context, data_dict_action)
+            except NotAuthorized:
+                abort(403, _('Not authorized to perform bulk update'))
+            # self._redirect_to_this_controller(action='bulk_process', id=id)
+
+            # self._read(id, limit, group_type)
+            # request.params.keys = ""
+            # return self.read(id)
         try:
             # Do not query for the group datasets when dictizing, as they will
             # be ignored and get requested on the controller anyway
-            # data_dict['include_datasets'] = False
+
             c.basket_dict = tk.get_action('basket_show')(context, data_dict)
             c.packages = tk.get_action('basket_element_list')(context, data_dict)
             # c.group = context['group']
         except (NotFound, NotAuthorized):
             abort(404, _('Basket not found'))
 
-        # self._read(id, limit, group_type)
         return tk.render('basket/read.html', {'title': 'Basket'})
+
+
 
     def new(self, data=None, errors=None, error_summary=None):
         context = {'model': model, 'session': model.Session,

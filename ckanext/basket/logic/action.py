@@ -293,12 +293,27 @@ def basket_element_remove(context, data_dict):
     tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
 
-    basket_id, package_id = _get_or_bust(data_dict, ['basket_id', 'package_id'])
+    basket_id = _get_or_bust(data_dict, 'basket_id')
 
     basket = Basket.get(basket_id)
     if not basket:
         raise tk.ObjectNotFound('Basket was not found.')
 
+    pkgs = data_dict.get('packages', None)
+    package_id = data_dict.get('package_id', None)
+
+    if pkgs is not None:
+        for package_id in pkgs:
+            _basket_element_remove(context, model, package_id, basket)
+    elif package_id is not None:
+        _basket_element_remove(context, model, package_id, basket)
+    else:
+        basket_id = _get_or_bust(data_dict, 'package_id')
+
+    model.repo.commit()
+
+
+def _basket_element_remove(context, model, package_id, basket):
     pkg = model.Package.get(package_id)
     if not pkg:
         raise tk.ObjectNotFound('Package was not found.')
@@ -311,4 +326,3 @@ def basket_element_remove(context, data_dict):
         # rev.author = context.get('user')
         # rev.message = _(u'REST API: Delete Member: %s') % obj_id
         basket_association.delete()
-        model.repo.commit()

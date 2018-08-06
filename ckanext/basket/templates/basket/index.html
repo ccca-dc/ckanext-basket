@@ -19,6 +19,18 @@
                 {% if h.check_access('basket_create') %}
                   {% link_for _('Add Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='new', class_='btn btn-success pull-right', icon='plus-sign-alt' %}
                 {% endif %}
+                <span class="livicon-evo pull-right" data-options="
+                        name: info-alt.svg;
+                        style: lines;
+                        size: 50px;
+                        strokeColor: #5893DD;
+                        strokeWidth: 2;
+                        duration: 2;
+                        repeat: loop;
+                        repeatDelay: 1;
+                        eventOn: none;
+                        drawOnViewport: true
+                    "></span>
             </div>
         {% block primary_content_inner %}
           <h1 class="hide-heading">{{ _('Baskets') }}</h1>
@@ -32,7 +44,7 @@
               <p class="empty">
                 {{ _('There are currently no baskets for this user') }}.
                 {% if h.check_access('group_create') %}
-                  {% link_for _('How about creating one?'), controller='group', action='new' %}</a>
+                  {% link_for _('How about creating one?'), controller='ckanext.basket.controllers.basket:BasketController', action='new' %}</a>
                 {% endif %}
               </p>
             {% endif %}

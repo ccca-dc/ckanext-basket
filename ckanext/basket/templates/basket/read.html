@@ -18,7 +18,11 @@
         drawOnViewport: true
     "></span>
    </h1>
-
+   {% block description %}
+      {% if c.basket_dict.description %}
+        {{ c.basket_dict.description }}
+      {% endif %}
+  {% endblock %}
 {% endblock %}
 
 {% block primary %}
@@ -59,7 +63,7 @@
                    <th style="text-align: center; vertical-align: middle;"></th>
                    <th class="table-actions">
                      <div class="btn-group">
-                         <button name="bulk_action.add" value="delete" class="btn btn-success" type="submit">
+                         <button name="bulk_action.export" value="export" class="btn btn-success" type="submit">
                            <span class="livicon-evo" data-options="
                                name: cloud-download.svg;
                                size: 30px;

@@ -2,6 +2,7 @@
 
 <form id="group-edit" class="dataset-form form-horizontal" method="post" data-module="basic-form" enctype="multipart/form-data">
     {{ form.input('name', label=_('Name'), id='field-name', value=data.name, error=errors.name, placeholder=_('eg. My Basket'), classes=['control-medium'], attrs={"class": "form-control"}) }}
+    {{ form.textarea('description', label=_('Description'), id='field-description', value=data.description, error=errors.description, placeholder=_('A little information about my basket...'), classes=['control-full', 'control-large'], attrs={"class": "form-control"}) }}
     {{ form.select(
     'element_type',
     id='field-element_type',
