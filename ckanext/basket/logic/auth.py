@@ -51,7 +51,7 @@ def basket_list(context, data_dict):
     user_dct = tk.get_action("user_show")(context,{"id": user})
 
     # only sysadmins can create baskets for other users
-    if data_dict.get('user_id') != user_dct['id']:
+    if data_dict.get('user_id') != user_dct['id'] and data_dict.get('user_id', None) is not None:
         return {'success': False,
                 'msg': _('User %s not authorized to list baskets') %
                         (str(user))}

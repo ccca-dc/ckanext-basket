@@ -172,7 +172,6 @@ def basket_list(context, data_dict):
     :type user_id: string
     :returns:
     """
-    tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
     user = context['user']
 

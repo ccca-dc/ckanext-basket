@@ -1,5 +1,6 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+from ckanext.basket import helpers
 
 
 class BasketPlugin(plugins.SingletonPlugin):
@@ -7,6 +8,7 @@ class BasketPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IAuthFunctions, inherit=True)
     plugins.implements(plugins.IRoutes, inherit=True)
+    plugins.implements(plugins.ITemplateHelpers)
 
     # IConfigurer
     def update_config(self, config_):
@@ -61,3 +63,9 @@ class BasketPlugin(plugins.SingletonPlugin):
                     action='delete')
 
         return map
+
+    # ITemplateHelpers
+    def get_helpers(self):
+        return {
+            'basket_list': helpers.basket_list
+            }
