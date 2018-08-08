@@ -64,11 +64,14 @@ class BasketPlugin(plugins.SingletonPlugin):
         map.connect('add_package_to_basket', '/basket/add_package/{basket_id}/{package_id}',
                     controller='ckanext.basket.controllers.basket:BasketController',
                     action='add_package_to_basket')
+        map.connect('add_packages_to_basket', '/basket/add_packages/{basket_id}/{packages}',
+                    controller='ckanext.basket.controllers.basket:BasketController',
+                    action='add_packages_to_basket')
 
         return map
 
     # ITemplateHelpers
     def get_helpers(self):
         return {
-            'basket_list': helpers.basket_list
+            'basket_list_for_pkg': helpers.basket_list_for_pkg
             }

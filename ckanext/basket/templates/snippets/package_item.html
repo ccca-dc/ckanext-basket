@@ -4,7 +4,7 @@
 
 {% block notes %}
 {{super()}}
-{% set baskets = h.basket_list(c.user) %}
+{% set baskets = h.basket_list_for_pkg(c.user, package.id) %}
 {% if baskets|length > 0 %}
   <div class="dropdown btn-group pull-right">
     <a href="#" title="{{ _('Add to Basket') }}" class="btn btn-sm dropdown-toggle" data-toggle="dropdown">

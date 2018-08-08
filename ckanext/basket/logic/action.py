@@ -189,7 +189,7 @@ def basket_list(context, data_dict):
 
     q = model.Session.query(Basket).filter(Basket.user_id == user_id)
 
-    return [d.table_dictize(basket, context) for basket in q.all()]
+    return [basket.as_dict() for basket in q.all()]
 
 
 @ckan.logic.side_effect_free

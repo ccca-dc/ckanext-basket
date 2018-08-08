@@ -301,3 +301,7 @@ class BasketController(base.BaseController):
 
         url = h.url_for('/dataset')
         redirect(url)
+
+    def add_packages_to_basket(self, basket_id, packages):
+        url = h.url_for('/dataset')
+        redirect(url)
