@@ -61,6 +61,9 @@ class BasketPlugin(plugins.SingletonPlugin):
         map.connect('basket_delete', '/basket/delete/{id}',
                     controller='ckanext.basket.controllers.basket:BasketController',
                     action='delete')
+        map.connect('add_package_to_basket', '/basket/add_package/{basket_id}/{package_id}',
+                    controller='ckanext.basket.controllers.basket:BasketController',
+                    action='add_package_to_basket')
 
         return map
 

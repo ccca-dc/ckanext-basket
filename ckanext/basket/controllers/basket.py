@@ -281,3 +281,23 @@ class BasketController(base.BaseController):
         except NotFound:
             abort(404, _('Basket not found'))
         return tk.render('basket/confirm_delete.html', vars)
+
+    def add_package_to_basket(self, basket_id, package_id):
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
+
+        try:
+            tk.check_access('basket_owner_only', context, {'id': basket_id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to add package to basket'))
+
+        try:
+            tk.get_action('basket_element_add')(context, {'basket_id': basket_id, 'package_id': package_id})
+            h.flash_notice(_('Package has been added to Basket.'))
+        except NotAuthorized:
+            abort(403, _('Unauthorized to add package to basket'))
+        except NotFound:
+            abort(404, _('Package not found'))
+
+        url = h.url_for('/dataset')
+        redirect(url)
