@@ -8,6 +8,7 @@ from pylons.i18n import get_lang
 
 import ckan.lib.base as base
 import ckan.lib.helpers as h
+import ckanext.ccca.helpers as ccca_helpers
 import ckan.lib.maintain as maintain
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.logic as logic
@@ -302,6 +303,60 @@ class BasketController(base.BaseController):
         url = h.url_for('/dataset')
         redirect(url)
 
-    def add_packages_to_basket(self, basket_id, packages):
+    def add_packages_to_basket(self, basket_id):
+        packages = request.params['packages'].split(",")
+
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
+
+        try:
+            tk.check_access('basket_owner_only', context, {'id': basket_id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to add package to basket'))
+
+        try:
+            basket = tk.get_action('basket_show')(context, {'id': basket_id})
+            basket_associations = tk.get_action('basket_element_add')(context, {'basket_id': basket['id'], 'packages': packages})
+            if len(basket_associations) > 0:
+                h.flash_notice(_('%s Packages have been added to Basket.') % (len(basket_associations)))
+            else:
+                h.flash_notice(_('Packages are already in Basket.'))
+        except NotAuthorized:
+            abort(403, _('Unauthorized to add package to basket'))
+        except NotFound:
+            abort(404, _('Package not found'))
+
         url = h.url_for('/dataset')
+        redirect(url)
+
+    def add_user_packages_to_basket(self, basket_id):
+        packages = request.params['creator_packages'].split(",")
+
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
+
+        try:
+            tk.check_access('basket_owner_only', context, {'id': basket_id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to add package to basket'))
+
+        try:
+            packages.extend(pkg['id'] for pkg in ccca_helpers.ccca_get_datasets_by_role('author', c.user))
+            packages.extend(pkg['id'] for pkg in ccca_helpers.ccca_get_datasets_by_role('maintainer', c.user))
+
+            basket = tk.get_action('basket_show')(context, {'id': basket_id})
+
+            basket_associations = tk.get_action('basket_element_add')(context, {'basket_id': basket['id'], 'packages': list(set(packages))})
+            if len(basket_associations) > 0:
+                h.flash_notice(_('%s Packages have been added to Basket.') % (len(basket_associations)))
+            else:
+                h.flash_notice(_('Packages are already in Basket.'))
+        except NotAuthorized:
+            abort(403, _('Unauthorized to add package to basket'))
+        except NotFound:
+            abort(404, _('Package not found'))
+
+        url = h.url_for(controller='user',
+            action='read',
+            id=c.user)
         redirect(url)

@@ -249,34 +249,54 @@ def basket_element_add(context, data_dict):
 
     :param basket_id: The id of the basket
     :type basket_id: string
+    :param packages: The id of the packages
+    :type packages: list of strings
     :param package_id: The id of the package
     :type package_id: string
     :returns:
     """
-    tk.check_access('basket_owner_only', context, data_dict)
+    tk.check_access('basket_owner_only', context,  {'id': data_dict['basket_id']})
     model = context['model']
-    user = context['user']
 
-    basket_id, package_id = _get_or_bust(data_dict, ['basket_id', 'package_id'])
+    basket_id = _get_or_bust(data_dict, 'basket_id')
 
     basket = Basket.get(basket_id)
-
-    if basket is None:
+    if not basket:
         raise tk.ObjectNotFound('Basket was not found.')
 
-    package = model.Package.get(package_id)
+    pkgs = data_dict.get('packages', None)
+    package_id = data_dict.get('package_id', None)
 
-    if package is None:
+    if pkgs is not None:
+        basket_association = []
+        for package_id in pkgs:
+            new_basket_association = _basket_element_add(context, model, package_id, basket)
+            if new_basket_association is not None:
+                basket_association.append(new_basket_association)
+    elif package_id is not None:
+        basket_association = _basket_element_add(context, model, package_id, basket)
+    else:
+        basket_id = _get_or_bust(data_dict, 'package_id')
+
+    return basket_association
+
+
+def _basket_element_add(context, model, package_id, basket):
+    pkg = model.Package.get(package_id)
+    if not pkg:
         raise tk.ObjectNotFound('Package was not found.')
 
-    data_dict['package_id'] = package.id
-
-    basket_association = d.table_dict_save(data_dict, BasketAssociation, context)
+    if pkg.id not in basket.as_dict()['packages']:
+        basket_association = d.table_dict_save({'basket_id': basket.id, 'package_id': package_id}, BasketAssociation, context)
+        basket_association = basket_association.as_dict()
+    else:
+        return None
 
     if not context.get('defer_commit'):
         model.repo.commit()
 
-    return basket_association.as_dict()
+    return basket_association
+
 
 
 @ckan.logic.side_effect_free
@@ -285,11 +305,13 @@ def basket_element_remove(context, data_dict):
 
     :param basket_id: The id of the basket
     :type basket_id: string
+    :param packages: The id of the packages
+    :type packages: list of strings
     :param package_id: The id of the package
     :type package_id: string
     :returns:
     """
-    tk.check_access('basket_owner_only', context, data_dict)
+    tk.check_access('basket_owner_only', context, {'id': data_dict['basket_id']})
     model = context['model']
 
     basket_id = _get_or_bust(data_dict, 'basket_id')

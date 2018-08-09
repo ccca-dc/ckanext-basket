@@ -64,9 +64,13 @@ class BasketPlugin(plugins.SingletonPlugin):
         map.connect('add_package_to_basket', '/basket/add_package/{basket_id}/{package_id}',
                     controller='ckanext.basket.controllers.basket:BasketController',
                     action='add_package_to_basket')
-        map.connect('add_packages_to_basket', '/basket/add_packages/{basket_id}/{packages}',
+        map.connect('add_packages_to_basket', '/basket/add_packages/{basket_id}',
                     controller='ckanext.basket.controllers.basket:BasketController',
                     action='add_packages_to_basket')
+        map.connect('add_user_packages_to_basket', '/basket/add_user_packages/{basket_id}',
+                    controller='ckanext.basket.controllers.basket:BasketController',
+                    action='add_user_packages_to_basket')
+
 
         return map
 
