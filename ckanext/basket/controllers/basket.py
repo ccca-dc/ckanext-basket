@@ -18,7 +18,9 @@ import ckan.authz as authz
 import ckan.lib.plugins
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
-from ckan.common import OrderedDict, c, g, request, _
+import ast
+from ckan.common import OrderedDict, c, g, request, _, config
+from paste.deploy.converters import asbool
 
 log = logging.getLogger(__name__)
 
@@ -304,10 +306,41 @@ class BasketController(base.BaseController):
         redirect(url)
 
     def add_packages_to_basket(self, basket_id):
-        packages = request.params['packages'].split(",")
-
         context = {'model': model, 'session': model.Session,
                    'user': c.user}
+
+        request_params = request.params['request_params']
+        fields_grouped = request.params['fields_grouped']
+
+        request_params = ast.literal_eval(request_params)
+        q = request_params.get('q', '')
+        fields_grouped = ast.literal_eval(fields_grouped)
+
+        # adding search extras (bbox, date)
+        search_extras = {}
+        for (param, value) in request_params.items():
+            if param not in ['q', 'page', 'sort'] \
+                    and len(value) and not param.startswith('_') \
+                    and param.startswith('ext_'):
+                    search_extras[param] = value
+
+        # adding other search params
+        fq = ''
+        for key, values in fields_grouped.iteritems():
+            for v in values:
+                fq += ' %s:"%s"' % (key, v)
+
+        data_dict = {
+                'q': q,
+                'fq': fq,
+                'rows': 1000,
+                'extras': search_extras,
+                'include_private': asbool(config.get(
+                    'ckan.search.default_include_private', True)),
+                }
+
+        query = tk.get_action('package_search')(context, data_dict)
+        packages = [pkg['id'] for pkg in query['results']]
 
         try:
             tk.check_access('basket_owner_only', context, {'id': basket_id})

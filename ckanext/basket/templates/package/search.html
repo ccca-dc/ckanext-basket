@@ -5,10 +5,6 @@
 {% block page_primary_action %}
 
 {% set baskets = h.basket_list_for_pkg(c.user, None) %}
-{% set package_ids = [] %}
-{% for pkg in c.page.items %}
-    {% do package_ids.append(pkg.id) %}
-{% endfor %}
 
 {% if baskets|length > 0 %}
 <div class="dropdown pull-right">
@@ -24,7 +20,7 @@
   <ul class="dropdown-menu">
       {% for basket in baskets %}
         <li>
-            <a href="{{ h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='add_packages_to_basket', basket_id=basket.id, packages=package_ids|join(','))}}" title="{{ _('Add all') }} {{c.page.items|length }} {{ _('Packages to') }} {{basket.name}}">
+            <a href="{{ h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='add_packages_to_basket', basket_id=basket.id, fields_grouped=c.fields_grouped, request_params=dict(request.params))}}" title="{{ _('Add all') }} {{c.page.items|length }} {{ _('Packages to') }} {{basket.name}}">
               <span class="livicon-evo" data-options="
               name: box.svg;
               size: 20px;
