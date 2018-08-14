@@ -1,0 +1,19 @@
+@media only screen and (max-width: 600px) {
+    .search-form h2 {
+        clear: right;
+    }
+}
+@media only screen and (max-width: 400px) {
+    .basket-heading {
+        clear: right;
+    }
+}
+@media (min-width: 700px) {
+    .basket-btn-group {
+        width: 50% !important;
+    }
+}
+.big-media-button {
+    margin-bottom: 10px !important;
+    margin-left: 10px !important;
+}

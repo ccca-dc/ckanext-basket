@@ -350,8 +350,10 @@ class BasketController(base.BaseController):
         try:
             basket = tk.get_action('basket_show')(context, {'id': basket_id})
             basket_associations = tk.get_action('basket_element_add')(context, {'basket_id': basket['id'], 'packages': packages})
-            if len(basket_associations) > 0:
-                h.flash_notice(_('%s Packages have been added to Basket.') % (len(basket_associations)))
+            if len(basket_associations) == 1:
+                h.flash_notice(_('1 Package has been added to Basket "%s".') % (basket['name']))
+            elif len(basket_associations) > 0:
+                h.flash_notice(_('%s Packages have been added to Basket "%s".') % (len(basket_associations), basket['name']))
             else:
                 h.flash_notice(_('Packages are already in Basket.'))
         except NotAuthorized:
@@ -380,8 +382,10 @@ class BasketController(base.BaseController):
             basket = tk.get_action('basket_show')(context, {'id': basket_id})
 
             basket_associations = tk.get_action('basket_element_add')(context, {'basket_id': basket['id'], 'packages': list(set(packages))})
-            if len(basket_associations) > 0:
-                h.flash_notice(_('%s Packages have been added to Basket.') % (len(basket_associations)))
+            if len(basket_associations) == 1:
+                h.flash_notice(_('1 Package has been added to Basket "%s".') % (basket['name']))
+            elif len(basket_associations) > 0:
+                h.flash_notice(_('%s Packages have been added to Basket "%s".') % (len(basket_associations), basket['name']))
             else:
                 h.flash_notice(_('Packages are already in Basket.'))
         except NotAuthorized:

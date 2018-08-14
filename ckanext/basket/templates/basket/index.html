@@ -1,4 +1,5 @@
 {% resource 'ccca/livicons' %}
+{% resource 'basket/basket.css' %}
 
 {% extends "page.html" %}
 
@@ -19,6 +20,7 @@
                 {% if h.check_access('basket_create') %}
                   {% link_for _('Add Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='new', class_='btn btn-success pull-right', icon='plus-sign-alt' %}
                 {% endif %}
+                <div class="helptip pull-right">
                 <span class="livicon-evo pull-right" data-options="
                         name: info-alt.svg;
                         style: lines;
@@ -31,9 +33,11 @@
                         eventOn: none;
                         drawOnViewport: true
                     "></span>
+                    <span class="helptiptext">You can create baskets to...</span>
+                </div>
             </div>
         {% block primary_content_inner %}
-          <h1 class="hide-heading">{{ _('Baskets') }}</h1>
+          <h1 class="hide-heading basket-heading">{{ _('Baskets') }}</h1>
           {% block basket_list %}
             <ul class="{{ list_class or 'dataset-list unstyled' }}">
               {% for basket in c.page.items %}
