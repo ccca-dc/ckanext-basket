@@ -347,19 +347,7 @@ class BasketController(base.BaseController):
         except NotAuthorized:
             abort(403, _('Unauthorized to add package to basket'))
 
-        try:
-            basket = tk.get_action('basket_show')(context, {'id': basket_id})
-            basket_associations = tk.get_action('basket_element_add')(context, {'basket_id': basket['id'], 'packages': packages})
-            if len(basket_associations) == 1:
-                h.flash_notice(_('1 Package has been added to Basket "%s".') % (basket['name']))
-            elif len(basket_associations) > 0:
-                h.flash_notice(_('%s Packages have been added to Basket "%s".') % (len(basket_associations), basket['name']))
-            else:
-                h.flash_notice(_('Packages are already in Basket.'))
-        except NotAuthorized:
-            abort(403, _('Unauthorized to add package to basket'))
-        except NotFound:
-            abort(404, _('Package not found'))
+        self._add_packages_to_basket(context, basket_id, packages)
 
         url = h.url_for('/dataset')
         redirect(url)
@@ -375,13 +363,58 @@ class BasketController(base.BaseController):
         except NotAuthorized:
             abort(403, _('Unauthorized to add package to basket'))
 
+        packages.extend(pkg['id'] for pkg in ccca_helpers.ccca_get_datasets_by_role('author', c.user))
+        packages.extend(pkg['id'] for pkg in ccca_helpers.ccca_get_datasets_by_role('maintainer', c.user))
+
+        self._add_packages_to_basket(context, basket_id, list(set(packages)))
+
+        url = h.url_for(controller='user',
+            action='read',
+            id=c.user)
+        redirect(url)
+
+    def add_org_packages_to_basket(self, basket_id, org_id):
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
         try:
-            packages.extend(pkg['id'] for pkg in ccca_helpers.ccca_get_datasets_by_role('author', c.user))
-            packages.extend(pkg['id'] for pkg in ccca_helpers.ccca_get_datasets_by_role('maintainer', c.user))
+            tk.check_access('basket_owner_only', context, {'id': basket_id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to add package to basket'))
 
+        org = tk.get_action('organization_show')(context, {'id': org_id, 'include_datasets': True})
+
+        packages = [pkg['id'] for pkg in org['packages']]
+
+        self._add_packages_to_basket(context, basket_id, list(set(packages)))
+
+        url = h.url_for(controller='organization',
+            action='read',
+            id=org_id)
+        redirect(url)
+
+    def add_group_packages_to_basket(self, basket_id, group_id):
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
+        try:
+            tk.check_access('basket_owner_only', context, {'id': basket_id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to add package to basket'))
+
+        org = tk.get_action('group_show')(context, {'id': group_id, 'include_datasets': True})
+
+        packages = [pkg['id'] for pkg in org['packages']]
+
+        self._add_packages_to_basket(context, basket_id, list(set(packages)))
+
+        url = h.url_for(controller='group',
+            action='read',
+            id=group_id)
+        redirect(url)
+
+    def _add_packages_to_basket(self, context, basket_id, packages):
+        try:
             basket = tk.get_action('basket_show')(context, {'id': basket_id})
-
-            basket_associations = tk.get_action('basket_element_add')(context, {'basket_id': basket['id'], 'packages': list(set(packages))})
+            basket_associations = tk.get_action('basket_element_add')(context, {'basket_id': basket['id'], 'packages': packages})
             if len(basket_associations) == 1:
                 h.flash_notice(_('1 Package has been added to Basket "%s".') % (basket['name']))
             elif len(basket_associations) > 0:
@@ -392,8 +425,3 @@ class BasketController(base.BaseController):
             abort(403, _('Unauthorized to add package to basket'))
         except NotFound:
             abort(404, _('Package not found'))
-
-        url = h.url_for(controller='user',
-            action='read',
-            id=c.user)
-        redirect(url)

@@ -9,13 +9,13 @@
 
 {% if baskets|length > 0 %}
 <div class="dropdown pull-right big-media">
-  <a href="#" title="{{ _('Add all Packages to Basket') }}" class="btn btn-sm btn-primary dropdown-toggle big-media-button" data-toggle="dropdown">
+  <a href="#" title="{{ _('Add all Packages to Basket') }}" class="btn btn-sm btn-primary dropdown-toggle add-all-packages-btn" data-toggle="dropdown">
       <span class="livicon-evo" data-options="
          name: box-add.svg;
          size: 33px;
          style: lines;
          strokeColor: #fff;
-         eventType: none;">
+         eventType: click;">
       </span>
   </a>
   <ul class="dropdown-menu">

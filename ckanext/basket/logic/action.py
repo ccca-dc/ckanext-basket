@@ -282,12 +282,10 @@ def basket_element_add(context, data_dict):
 
 
 def _basket_element_add(context, model, package_id, basket):
-    pkg = model.Package.get(package_id)
-    if not pkg:
-        raise tk.ObjectNotFound('Package was not found.')
+    pkg = tk.get_action('package_show')(context, {'id': package_id})
 
-    if pkg.id not in basket.as_dict()['packages']:
-        basket_association = d.table_dict_save({'basket_id': basket.id, 'package_id': package_id}, BasketAssociation, context)
+    if pkg['id'] not in basket.as_dict()['packages']:
+        basket_association = d.table_dict_save({'basket_id': basket.id, 'package_id': pkg['id']}, BasketAssociation, context)
         basket_association = basket_association.as_dict()
     else:
         return None
