@@ -6,8 +6,7 @@
     {% set baskets = h.basket_list_for_pkg(c.user, None) %}
 
     {% if baskets|length > 0 %}
-    <div style="overflow:hidden">
-        <div class="dropdown pull-right">
+        <div class="dropdown">
           <a href="#" title="{{ _('Add all Packages to Basket') }}" class="btn btn-sm btn-primary dropdown-toggle add-all-packages-btn" data-toggle="dropdown">
               <span class="livicon-evo" data-options="
                  name: box-add.svg;
@@ -34,6 +33,5 @@
             {% endfor %}
           </ul>
         </div>
-     </div>
     {% endif %}
 {% endblock %}
