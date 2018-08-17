@@ -63,8 +63,8 @@
                  <tr class="active">
                    <th style="text-align: center; vertical-align: middle;"></th>
                    <th class="table-actions">
-                     <div class="btn-group btn-group-justified basket-btn-group">
-                         <a href="#" name="bulk_action.export" value="export" class="btn btn-success" type="submit">
+                     <div class="btn-group basket-btn-group">
+                         <button name="bulk_action.export" value="export" class="btn btn-success basket-btn" type="submit">
                            <span class="livicon-evo" data-options="
                                name: cloud-download.svg;
                                size: 30px;
@@ -73,8 +73,8 @@
                                eventOn: parent">
                            </span>
                            {{ _('Export') }}
-                       </a>
-                       <a href="#" name="bulk_action.delete" value="delete" class="btn btn-danger" type="submit">
+                       </button>
+                       <button name="bulk_action.delete" value="delete" class="btn btn-danger basket-btn" type="submit">
                            <span class="livicon-evo" data-options="
                                name: box-extract.svg;
                                size: 30px;
@@ -83,7 +83,7 @@
                                 eventOn: parent">
                            </span>
                          {{ _('Delete') }}
-                     </a>
+                     </button>
                      </div>
                    </th>
                  </tr>

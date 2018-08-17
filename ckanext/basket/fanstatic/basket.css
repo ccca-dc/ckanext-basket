@@ -8,6 +8,12 @@
         clear: right;
     }
 }
+.basket-btn-group {
+    width: 100% !important;
+}
+.basket-btn {
+    width: 50%;
+}
 @media (min-width: 700px) {
     .basket-btn-group {
         width: 50% !important;
