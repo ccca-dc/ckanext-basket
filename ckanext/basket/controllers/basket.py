@@ -106,7 +106,7 @@ class BasketController(base.BaseController):
         c.q = request.params.get('q', '')
 
         # use different form names so that ie7 can be detected
-        form_names = set(["bulk_action.export", "bulk_action.delete"])
+        form_names = set(["bulk_action.export", "bulk_action.delete", "bulk_action.group"])
         actions_in_form = set(request.params.keys())
         actions = form_names.intersection(actions_in_form)
 
@@ -128,28 +128,48 @@ class BasketController(base.BaseController):
                 if param.startswith('dataset_'):
                     datasets.append(param[8:])
 
-            action_functions = {
-                'export': 'basket_export',
-                'delete': 'basket_element_remove',
-            }
+            if len(datasets) > 0:
+                if action == 'group':
+                    for dataset in datasets:
+                        member_dict = dict()
+                        member_dict['id'] = request.params.get('bulk_action.group')
+                        member_dict['object'] = dataset
+                        member_dict['object_type'] = 'package'
+                        member_dict['capacity'] = 'public'
+                        tk.get_action('member_create')(context, member_dict)
+                    h.flash_notice(_('Packages have been added to Group %s.') % (member_dict['id']))
 
-            data_dict_action = {'packages': datasets, 'basket_id': data_dict['id']}
+                else:
+                    action_functions = {
+                        'export': 'basket_export',
+                        'delete': 'basket_element_remove',
+                    }
 
-            try:
-                get_action(action_functions[action])(context, data_dict_action)
-            except NotAuthorized:
-                abort(403, _('Not authorized to perform bulk update'))
-            # self._redirect_to_this_controller(action='bulk_process', id=id)
+                    data_dict_action = {'packages': datasets, 'basket_id': data_dict['id']}
 
-            # self._read(id, limit, group_type)
-            # request.params.keys = ""
-            # return self.read(id)
+                    # TODO remove when implemented
+                    if action == 'export':
+                        h.flash_notice(_('Sorry, feature currently not implemented.'))
+                    else:
+                        try:
+                            get_action(action_functions[action])(context, data_dict_action)
+                        except NotAuthorized:
+                            abort(403, _('Not authorized to perform bulk update'))
+                    # self._redirect_to_this_controller(action='bulk_process', id=id)
+
+                    # self._read(id, limit, group_type)
+                    # request.params.keys = ""
+                    # return self.read(id)
         try:
             # Do not query for the group datasets when dictizing, as they will
             # be ignored and get requested on the controller anyway
 
             c.basket_dict = tk.get_action('basket_show')(context, data_dict)
             c.packages = tk.get_action('basket_element_list')(context, data_dict)
+            users_groups = get_action('group_list_authz')(context, data_dict)
+
+            c.groups = [{'id': group['name'], 'display_name': group['display_name']}
+                        for group in users_groups]
             # c.group = context['group']
         except (NotFound, NotAuthorized):
             abort(404, _('Basket not found'))
