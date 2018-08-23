@@ -393,7 +393,7 @@ class BasketController(base.BaseController):
             id=c.user)
         redirect(url)
 
-    def add_org_packages_to_basket(self, basket_id, org_id):
+    def add_org_packages_to_basket(self, basket_id, org_name):
         context = {'model': model, 'session': model.Session,
                    'user': c.user}
         try:
@@ -401,18 +401,36 @@ class BasketController(base.BaseController):
         except NotAuthorized:
             abort(403, _('Unauthorized to add package to basket'))
 
-        org = tk.get_action('organization_show')(context, {'id': org_id, 'include_datasets': True})
+        # adding search params
+        fields_grouped = request.params['fields_grouped']
+        fields_grouped = ast.literal_eval(fields_grouped)
 
-        packages = [pkg['id'] for pkg in org['packages']]
+        fq = ''
+        for key, values in fields_grouped.iteritems():
+            for v in values:
+                fq += ' %s:"%s"' % (key, v)
+
+        fq += ' %s:"%s"' % ('organization', org_name)
+
+        data_dict = {
+                'q': request.params.get('q', ''),
+                'fq': fq,
+                'rows': 1000,
+                'include_private': asbool(config.get(
+                    'ckan.search.default_include_private', True)),
+                }
+
+        query = tk.get_action('package_search')(context, data_dict)
+        packages = [pkg['id'] for pkg in query['results']]
 
         self._add_packages_to_basket(context, basket_id, list(set(packages)))
 
         url = h.url_for(controller='organization',
             action='read',
-            id=org_id)
+            id=org_name)
         redirect(url)
 
-    def add_group_packages_to_basket(self, basket_id, group_id):
+    def add_group_packages_to_basket(self, basket_id, group_name):
         context = {'model': model, 'session': model.Session,
                    'user': c.user}
         try:
@@ -420,15 +438,33 @@ class BasketController(base.BaseController):
         except NotAuthorized:
             abort(403, _('Unauthorized to add package to basket'))
 
-        org = tk.get_action('group_show')(context, {'id': group_id, 'include_datasets': True})
+        # adding search params
+        fields_grouped = request.params['fields_grouped']
+        fields_grouped = ast.literal_eval(fields_grouped)
 
-        packages = [pkg['id'] for pkg in org['packages']]
+        fq = ''
+        for key, values in fields_grouped.iteritems():
+            for v in values:
+                fq += ' %s:"%s"' % (key, v)
+
+        fq += ' %s:"%s"' % ('groups', group_name)
+
+        data_dict = {
+                'q': request.params.get('q', ''),
+                'fq': fq,
+                'rows': 1000,
+                'include_private': asbool(config.get(
+                    'ckan.search.default_include_private', True)),
+                }
+
+        query = tk.get_action('package_search')(context, data_dict)
+        packages = [pkg['id'] for pkg in query['results']]
 
         self._add_packages_to_basket(context, basket_id, list(set(packages)))
 
         url = h.url_for(controller='group',
             action='read',
-            id=group_id)
+            id=group_name)
         redirect(url)
 
     def _add_packages_to_basket(self, context, basket_id, packages):
