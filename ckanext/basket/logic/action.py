@@ -274,6 +274,7 @@ def basket_element_add(context, data_dict):
             if new_basket_association is not None:
                 basket_association.append(new_basket_association)
     elif package_id is not None:
+        tk.check_access('package_show', context, {'id': package_id})
         basket_association = _basket_element_add(context, model, package_id, basket)
     else:
         basket_id = _get_or_bust(data_dict, 'package_id')

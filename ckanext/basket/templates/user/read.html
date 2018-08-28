@@ -1,3 +1,4 @@
+{% resource 'basket/basket.css' %}
 {% resource 'ccca/livicons' %}
 
 {% ckan_extends %}
@@ -12,7 +13,7 @@
 
         {% if baskets|length > 0 %}
         <div class="dropdown pull-right">
-          <a href="#" title="{{ _('Add all Packages to Basket') }}" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
+          <a href="#" title="{{ _('Add all Packages to Basket') }}" class="btn btn-sm btn-primary dropdown-toggle add-all-packages-btn" data-toggle="dropdown">
               <span class="livicon-evo" data-options="
                  name: box-add.svg;
                  size: 32px;
