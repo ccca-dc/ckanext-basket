@@ -26,7 +26,8 @@ class BasketPlugin(plugins.SingletonPlugin):
                     'basket_list': action.basket_list,
                     'basket_show': action.basket_show,
                     'basket_element_list': action.basket_element_list,
-                    'basket_element_remove': action.basket_element_remove}
+                    'basket_element_remove': action.basket_element_remove,
+                    'basket_export': action.basket_export}
         return actions
 
     # IAuthFunctions

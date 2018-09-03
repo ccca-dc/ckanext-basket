@@ -346,3 +346,31 @@ def _basket_element_remove(context, model, package_id, basket):
         # rev.author = context.get('user')
         # rev.message = _(u'REST API: Delete Member: %s') % obj_id
         basket_association.delete()
+
+@ckan.logic.side_effect_free
+def basket_export(context, data_dict):
+    """Export the baskets datasets to user home directory (needs ckanext-localimp)
+
+    :param user_id: The id of the user to create the basket for (only admin)
+    :type user_id: string
+    :param basket_id: basket_id of basket to export
+    :type basket_id: string
+    :param packages: Packages to export from basket (user can choose which packages to export) (optional)
+    :type paths: list of strings
+    :returns:
+    """
+    bsk_dct = tk.get_action("basket_show")(context,
+                                           {"id": tk.get_or_bust(data_dict, 'basket_id'),
+                                            "include_elements": True})
+    if "packages" not in data_dict:
+        data_dict['packages'] = tk.get_or_bust(bsk_dct, "packages")
+
+    pkg_in_basket = [ele for ele in data_dict['packages']
+                     if ele in bsk_dct.get('packages', None)]
+
+    tk.get_action("localimp_clear_export")(context, {"directory_name": bsk_dct.get("name", None)})
+
+    for pkg_id in pkg_in_basket:
+        tk.get_action("localimp_create_symlink")(
+            context,
+            {"id": pkg_id, "directory_name": bsk_dct.get("name", None)})

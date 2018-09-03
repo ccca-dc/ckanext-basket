@@ -148,13 +148,10 @@ class BasketController(base.BaseController):
                     data_dict_action = {'packages': datasets, 'basket_id': data_dict['id']}
 
                     # TODO remove when implemented
-                    if action == 'export':
-                        h.flash_notice(_('Sorry, feature currently not implemented.'))
-                    else:
-                        try:
-                            get_action(action_functions[action])(context, data_dict_action)
-                        except NotAuthorized:
-                            abort(403, _('Not authorized to perform bulk update'))
+                    try:
+                        get_action(action_functions[action])(context, data_dict_action)
+                    except NotAuthorized:
+                        abort(403, _('Not authorized to perform bulk update'))
                     # self._redirect_to_this_controller(action='bulk_process', id=id)
 
                     # self._read(id, limit, group_type)
