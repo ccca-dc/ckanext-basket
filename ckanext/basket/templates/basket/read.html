@@ -85,7 +85,7 @@
                            </span>
                          {{ _('Group') }}
                        </button>
-                       <ul class="dropdown-menu" role="menu">
+                       <ul class="dropdown-menu scrollable-menu" role="menu">
                           {% for group in c.groups %}
                             <li>
                                 <button class="btn dropdown-btn" name="bulk_action.group" value="{{ group.id }}" type="submit" href=# title="{{ _('Add all Packages to') }} {{group.display_name}}">
