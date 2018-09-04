@@ -142,6 +142,7 @@ class BasketController(base.BaseController):
                 else:
                     action_functions = {
                         'export': 'basket_export',
+                        'clear': 'basket_clear',
                         'delete': 'basket_element_remove',
                     }
 

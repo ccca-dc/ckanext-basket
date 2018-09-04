@@ -374,3 +374,18 @@ def basket_export(context, data_dict):
         tk.get_action("localimp_create_symlink")(
             context,
             {"id": pkg_id, "directory_name": bsk_dct.get("name", None)})
+
+
+@ckan.logic.side_effect_free
+def basket_clear(context, data_dict):
+    """Delete the baskets datasets from user home directory (needs ckanext-localimp)
+
+    :param user_id: The id of the user to create the basket for (only admin)
+    :type user_id: string
+    :param basket_id: basket_id of basket to export
+    :type basket_id: string
+    :param packages: Packages to export from basket (user can choose which packages to export) (optional)
+    :type paths: list of strings
+    :returns:
+    """
+    return
