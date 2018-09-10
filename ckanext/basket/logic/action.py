@@ -402,4 +402,4 @@ def basket_clear(context, data_dict):
             {"id": pkg_id, "directory_name": bsk_dct.get("name", None)}
         )
 
-    ls_home_dir = tk.get_action("localimp_show_files")(context, {})
+    # ls_home_dir = tk.get_action("localimp_show_files")(context, {})
