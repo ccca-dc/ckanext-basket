@@ -399,4 +399,7 @@ def basket_clear(context, data_dict):
     for pkg_id in pkg_in_basket:
         tk.get_action("localimp_remove_symlink")(
             context,
-            {"id": pkg_id, "directory_name": bsk_dct.get("name", None)})
+            {"id": pkg_id, "directory_name": bsk_dct.get("name", None)}
+        )
+
+    ls_home_dir = tk.get_action("localimp_show_files")(context, {})

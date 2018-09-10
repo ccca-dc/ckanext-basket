@@ -93,7 +93,6 @@ class BasketController(base.BaseController):
         )
 
         c.page.items = page_results
-        # import ipdb; ipdb.set_trace()
         return tk.render('basket/index.html', {'title': 'Baskets'})
 
     def read(self, id):
@@ -106,7 +105,11 @@ class BasketController(base.BaseController):
         c.q = request.params.get('q', '')
 
         # use different form names so that ie7 can be detected
-        form_names = set(["bulk_action.export", "bulk_action.delete", "bulk_action.group"])
+
+        form_names = set(["bulk_action.export",
+                          "bulk_action.clear",
+                          "bulk_action.delete",
+                          "bulk_action.group"])
         actions_in_form = set(request.params.keys())
         actions = form_names.intersection(actions_in_form)
 
@@ -128,6 +131,7 @@ class BasketController(base.BaseController):
                 if param.startswith('dataset_'):
                     datasets.append(param[8:])
 
+
             if len(datasets) > 0:
                 if action == 'group':
                     for dataset in datasets:
@@ -148,16 +152,18 @@ class BasketController(base.BaseController):
 
                     data_dict_action = {'packages': datasets, 'basket_id': data_dict['id']}
 
-                    # TODO remove when implemented
                     try:
                         get_action(action_functions[action])(context, data_dict_action)
                     except NotAuthorized:
                         abort(403, _('Not authorized to perform bulk update'))
-                    # self._redirect_to_this_controller(action='bulk_process', id=id)
 
-                    # self._read(id, limit, group_type)
-                    # request.params.keys = ""
-                    # return self.read(id)
+                    # Flash messages
+                    if "delete" in action:
+                        h.flash_notice(_('Packages have been deleteded from basket.'))
+                    elif "clear" in action:
+                        h.flash_notice(_('Packages have been cleared from home directory.'))
+                    elif "export" in action:
+                        h.flash_notice(_('Packages have been exported to home directory.'))
         try:
             # Do not query for the group datasets when dictizing, as they will
             # be ignored and get requested on the controller anyway
