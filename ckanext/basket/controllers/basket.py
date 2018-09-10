@@ -152,18 +152,28 @@ class BasketController(base.BaseController):
 
                     data_dict_action = {'packages': datasets, 'basket_id': data_dict['id']}
 
-                    try:
-                        get_action(action_functions[action])(context, data_dict_action)
-                    except NotAuthorized:
-                        abort(403, _('Not authorized to perform bulk update'))
-
+                    # TODO undo changes if autocreation of homedirectory works
                     # Flash messages
                     if "delete" in action:
+                        try:
+                            get_action(action_functions[action])(context, data_dict_action)
+                        except NotAuthorized:
+                            abort(403, _('Not authorized to perform bulk update'))
+
                         h.flash_notice(_('Packages have been deleteded from basket.'))
                     elif "clear" in action:
-                        h.flash_notice(_('Packages have been cleared from home directory.'))
+                        h.flash_notice(_('FEATURE NOT YET IMPLEMENTED: Packages have been cleared from home directory.'))
                     elif "export" in action:
-                        h.flash_notice(_('Packages have been exported to home directory.'))
+                        h.flash_notice(_('FEATURE NOT YET IMPLEMENTED: Packages have been exported to home directory.'))
+
+                    # TODO uncomment if autocreation of homedirectory works
+                    # # Flash messages
+                    # if "delete" in action:
+                    #     h.flash_notice(_('Packages have been deleteded from basket.'))
+                    # elif "clear" in action:
+                    #     h.flash_notice(_('Packages have been cleared from home directory.'))
+                    # elif "export" in action:
+                    #     h.flash_notice(_('Packages have been exported to home directory.'))
         try:
             # Do not query for the group datasets when dictizing, as they will
             # be ignored and get requested on the controller anyway
