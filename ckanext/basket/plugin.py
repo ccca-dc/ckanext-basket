@@ -78,11 +78,15 @@ class BasketPlugin(plugins.SingletonPlugin):
         map.connect('add_group_packages_to_basket', '/basket/add_group_packages/{basket_id}/{group_name}',
                     controller='ckanext.basket.controllers.basket:BasketController',
                     action='add_group_packages_to_basket')
+        map.connect('remove_package_from_basket', '/basket/remove_package/{basket_id}/{package_id}',
+                    controller='ckanext.basket.controllers.basket:BasketController',
+                    action='remove_package_from_basket')
 
         return map
 
     # ITemplateHelpers
     def get_helpers(self):
         return {
-            'basket_list_for_pkg': helpers.basket_list_for_pkg
+            'basket_list_for_pkg': helpers.basket_list_for_pkg,
+            'basket_list': helpers.basket_list
             }

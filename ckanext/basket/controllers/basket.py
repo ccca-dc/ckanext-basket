@@ -467,3 +467,23 @@ class BasketController(base.BaseController):
             abort(403, _('Unauthorized to add package to basket'))
         except NotFound:
             abort(404, _('Package not found'))
+
+    def remove_package_from_basket(self, basket_id, package_id):
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
+
+        try:
+            tk.check_access('basket_owner_only', context, {'id': basket_id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to remove package from basket'))
+
+        try:
+            tk.get_action('basket_element_remove')(context, {'basket_id': basket_id, 'package_id': package_id})
+            h.flash_notice(_('Package has been remove from Basket.'))
+        except NotAuthorized:
+            abort(403, _('Unauthorized to remove package from basket'))
+        except NotFound:
+            abort(404, _('Package not found'))
+
+        url = h.url_for('/dataset')
+        redirect(url)

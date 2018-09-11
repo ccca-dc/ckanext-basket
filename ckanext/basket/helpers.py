@@ -17,3 +17,8 @@ def basket_list_for_pkg(user, package_id):
         return baskets
 
     return filtered_baskets
+
+
+def basket_list(user):
+    baskets = tk.get_action('basket_list')({}, {'user_id': user})
+    return baskets

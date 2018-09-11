@@ -1,37 +1,6 @@
-{% resource 'ccca/livicons' %}
-
 {% ckan_extends %}
 
 {% block notes %}
 {{super()}}
-{% set baskets = h.basket_list_for_pkg(c.user, package.id) %}
-{% if baskets|length > 0 %}
-  <div class="dropdown btn-group pull-right">
-    <a href="#" title="{{ _('Add to Basket') }}" class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-        <span class="livicon-evo" data-options="
-           name: box-add.svg;
-           size: 30px;
-           style: lines;
-           strokeColor: #003647;
-           eventType: click;">
-        </span>
-    </a>
-    <ul class="dropdown-menu">
-        {% for basket in baskets %}
-          <li>
-              <a href="{{ h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='add_package_to_basket', basket_id=basket.id, package_id=package.id) }}" title="{{ _('Add') }}">
-                <span class="livicon-evo" data-options="
-                name: box.svg;
-                size: 20px;
-                style: lines;
-                strokeColor: #003647;
-                eventType: none;
-            "></span>
-            {{ basket.name }}
-            </a>
-          </li>
-      {% endfor %}
-    </ul>
-</div>
-{% endif %}
+{{ h.snippet('snippets/basket_button.html', package=package) }}
 {% endblock %}
