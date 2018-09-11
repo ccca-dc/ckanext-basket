@@ -169,7 +169,7 @@ class BasketController(base.BaseController):
                     # TODO uncomment if autocreation of homedirectory works
                     # # Flash messages
                     # if "delete" in action:
-                    #     h.flash_notice(_('Packages have been deleteded from basket.'))
+                    #     h.flash_notice(_('Packages have been deleted from basket.'))
                     # elif "clear" in action:
                     #     h.flash_notice(_('Packages have been cleared from home directory.'))
                     # elif "export" in action:
@@ -180,10 +180,15 @@ class BasketController(base.BaseController):
 
             c.basket_dict = tk.get_action('basket_show')(context, data_dict)
             c.packages = tk.get_action('basket_element_list')(context, data_dict)
-            users_groups = get_action('group_list_authz')(context, data_dict)
+            users_groups = get_action('group_list_authz')(context, {})
 
-            c.groups = [{'id': group['name'], 'display_name': group['display_name']}
-                        for group in users_groups]
+            # additional group_list is needed to get type of group
+            dict_group_list = dict()
+            dict_group_list['all_fields'] = True
+            dict_group_list['include_extras'] = True
+            dict_group_list['groups'] = [group['name'] for group in users_groups]
+            c.groups = get_action('group_list')(context, dict_group_list)
+
             # c.group = context['group']
         except (NotFound, NotAuthorized):
             abort(404, _('Basket not found'))

@@ -112,19 +112,31 @@
                          {{ _('Group') }}
                        </button>
                        <ul class="dropdown-menu scrollable-menu" role="menu">
-                          {% for group in c.groups %}
-                            <li>
-                                <button class="btn dropdown-btn" name="bulk_action.group" value="{{ group.id }}" type="submit" href=# title="{{ _('Add all Packages to') }} {{group.display_name}}">
-                                  <span class="livicon-evo" data-options="
-                                  name: tag.svg;
-                                  size: 20px;
-                                  style: lines;
-                                  strokeColor: #003647;
-                                  eventType: none;
-                              "></span>
-                              {{ group.display_name }}
-                          </button>
-                            </li>
+                          {%- set schema = h.scheming_get_group_schema('group') -%}
+                          {% set type_of_groups = h.scheming_field_by_name(schema['fields'], 'type_of_group')['choices'] %}
+                          {% set sorted_groups = c.groups|groupby('type_of_group') %}
+
+                          {% for group_type in type_of_groups %}
+                            {% set filtered_groups = h.ccca_filter_groupby(sorted_groups, group_type['value']) %}
+                            {% if filtered_groups|length > 0 %}
+                                <li class="heading-li">{{ group_type['label'] }}</li>
+                                {% if filtered_groups|length > 0 %}
+                                    {% for group in filtered_groups %}
+                                    <li>
+                                        <button class="btn dropdown-btn element-li" name="bulk_action.group" value="{{ group.id }}" type="submit" href=# title="{{ _('Add all Packages to') }} {{group.display_name}}">
+                                          <span class="livicon-evo" data-options="
+                                          name: tag.svg;
+                                          size: 20px;
+                                          style: lines;
+                                          strokeColor: #003647;
+                                          eventType: none;
+                                          "></span>
+                                          {{ group.display_name }}
+                                        </button>
+                                    </li>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endif %}
                         {% endfor %}
                       </ul>
                   </div>
