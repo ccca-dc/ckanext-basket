@@ -1,11 +1,14 @@
 {% resource 'ccca/livicons' %}
 
+{# h.basket_list_for_pkg returns availbale baskets for a package #}
 {% set baskets = h.basket_list_for_pkg(c.user, package.id) %}
 {% set add = True %}
 {% if baskets|length == 0 %}
     {% set add = False %}
     {% set baskets = h.basket_list(c.user) %}
 {% endif %}
+
+{% if baskets|length > 0 %} {# If User has any baskets at all #}
   <div class="dropdown btn-group pull-right">
     <a href="#" title="{% if add %}{{ _('Add Dataset to Basket') }}{% else %}{{ _('Remove Dataset from Basket') }}{% endif %}" class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
         <span class="livicon-evo" data-options="
@@ -35,3 +38,4 @@
       {% endfor %}
     </ul>
 </div>
+{% endif %}  {# If User has any baskets at all #}
