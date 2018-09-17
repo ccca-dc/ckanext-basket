@@ -1,5 +1,5 @@
 {% ckan_extends %}
 
 {% block resource_basket %}
-{{ h.snippet('snippets/basket_button.html', package=pkg) }}
+{{ h.snippet('snippets/basket_button.html', package=pkg, redirect_url=h.current_url()) }}
 {% endblock %}

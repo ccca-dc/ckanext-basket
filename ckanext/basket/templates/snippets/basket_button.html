@@ -1,6 +1,6 @@
 {% resource 'ccca/livicons' %}
 
-{# h.basket_list_for_pkg returns availbale baskets for a package #}
+{# h.basket_list_for_pkg returns available baskets for a package #}
 {% set baskets = h.basket_list_for_pkg(c.user, package.id) %}
 {% set add = True %}
 {% if baskets|length == 0 %}
@@ -22,8 +22,8 @@
     <ul class="dropdown-menu">
         {% for basket in baskets %}
           <li>
-              <a href="{% if add %}{{ h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='add_package_to_basket', basket_id=basket.id, package_id=package.id) }}
-              {% else %}{{ h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='remove_package_from_basket', basket_id=basket.id, package_id=package.id) }} {% endif %}"
+              <a href="{% if add %}{{ h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='add_package_to_basket', basket_id=basket.id, package_id=package.id, redirect_url=redirect_url) }}
+              {% else %}{{ h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='remove_package_from_basket', basket_id=basket.id, package_id=package.id, redirect_url=redirect_url) }} {% endif %}"
               title="{% if add %}{{ _('Add') }}{% else %}{{ _('Remove') }}{% endif %}">
                 <span class="livicon-evo" data-options="
                 name: box.svg;

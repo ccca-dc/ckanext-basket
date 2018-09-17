@@ -339,8 +339,8 @@ class BasketController(base.BaseController):
         except NotFound:
             abort(404, _('Package not found'))
 
-        url = h.url_for('/dataset')
-        redirect(url)
+        redirect_url = request.params.get('redirect_url', '/dataset')
+        return h.redirect_to(str(redirect_url))
 
     def add_packages_to_basket(self, basket_id):
         context = {'model': model, 'session': model.Session,
@@ -484,11 +484,11 @@ class BasketController(base.BaseController):
 
         try:
             tk.get_action('basket_element_remove')(context, {'basket_id': basket_id, 'package_id': package_id})
-            h.flash_notice(_('Package has been remove from Basket.'))
+            h.flash_notice(_('Package has been removed from Basket.'))
         except NotAuthorized:
             abort(403, _('Unauthorized to remove package from basket'))
         except NotFound:
             abort(404, _('Package not found'))
 
-        url = h.url_for('/dataset')
-        redirect(url)
+        redirect_url = request.params.get('redirect_url', '/dataset')
+        return h.redirect_to(str(redirect_url))
