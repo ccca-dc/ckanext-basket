@@ -160,7 +160,7 @@ class BasketController(base.BaseController):
                         except NotAuthorized:
                             abort(403, _('Not authorized to perform bulk update'))
 
-                        h.flash_notice(_('Packages have been deleteded from basket.'))
+                        h.flash_notice(_('Packages have been deleted from basket.'))
                     elif "clear" in action:
                         h.flash_notice(_('FEATURE NOT YET IMPLEMENTED: Packages have been cleared from home directory.'))
                     elif "export" in action:
