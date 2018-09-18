@@ -88,5 +88,6 @@ class BasketPlugin(plugins.SingletonPlugin):
     def get_helpers(self):
         return {
             'basket_list_for_pkg': helpers.basket_list_for_pkg,
-            'basket_list': helpers.basket_list
+            'basket_list': helpers.basket_list,
+            'get_basket_config': helpers.get_basket_config
             }

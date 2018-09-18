@@ -1,6 +1,7 @@
 import ckan.logic as logic
 import ckan.plugins.toolkit as tk
 import ckan.model as model
+from ckan.common import config
 
 
 def basket_list_for_pkg(user, package_id):
@@ -22,3 +23,7 @@ def basket_list_for_pkg(user, package_id):
 def basket_list(user):
     baskets = tk.get_action('basket_list')({}, {'user_id': user})
     return baskets
+
+
+def get_basket_config():
+    return config.get('ckanext.basket.max_number_of_pkgs_to_add_to_basket', 400)

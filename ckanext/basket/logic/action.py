@@ -5,6 +5,7 @@ import ckan.logic
 import ckan.lib.dictization as d
 import ckan.authz as authz
 import ckan.lib.dictization.model_dictize as model_dictize
+import ckanext.basket.helpers as helpers
 from ckanext.basket.models import Basket, BasketAssociation
 
 from logging import getLogger
@@ -60,8 +61,6 @@ def basket_update(context, data_dict):
     """
     tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
-    user = context['user']
-    session = context['session']
     id = _get_or_bust(data_dict, 'id')
 
     basket = Basket.get(id)
@@ -71,64 +70,7 @@ def basket_update(context, data_dict):
 
     tk.check_access('basket_update', context, data_dict)
 
-    # data, errors = lib_plugins.plugin_validate(
-    #     group_plugin, context, data_dict, schema,
-    #     'basket_update')
-    #
-    # if errors:
-    #     session.rollback()
-    #     raise ValidationError(errors)
-
     basket = d.table_dict_save(data_dict, Basket, context)
-
-    # if is_org:
-    #     plugin_type = plugins.IOrganizationController
-    # else:
-    #     plugin_type = plugins.IGroupController
-    #
-    # for item in plugins.PluginImplementations(plugin_type):
-    #     item.edit(group)
-
-    # if is_org:
-    #     activity_type = 'changed organization'
-    # else:
-    #     activity_type = 'changed group'
-    #
-    # activity_dict = {
-    #         'user_id': model.User.by_name(user.decode('utf8')).id,
-    #         'object_id': group.id,
-    #         'activity_type': activity_type,
-    #         }
-    # Handle 'deleted' groups.
-    # When the user marks a group as deleted this comes through here as
-    # a 'changed' group activity. We detect this and change it to a 'deleted'
-    # activity.
-    # if basket.state == u'deleted':
-    #     if session.query(ckan.model.Activity).filter_by(
-    #             object_id=basket.id, activity_type='deleted').all():
-    #         # A 'deleted group' activity for this group has already been
-    #         # emitted.
-    #         # FIXME: What if the group was deleted and then activated again?
-    #         activity_dict = None
-    #     else:
-    #         # We will emit a 'deleted group' activity.
-    #         activity_dict['activity_type'] = 'deleted group'
-    # if activity_dict is not None:
-    #     activity_dict['data'] = {
-    #             'group': dictization.table_dictize(group, context)
-    #             }
-    #     activity_create_context = {
-    #         'model': model,
-    #         'user': user,
-    #         'defer_commit': True,
-    #         'ignore_auth': True,
-    #         'session': session
-    #     }
-    #     _get_action('activity_create')(activity_create_context, activity_dict)
-    #     # TODO: Also create an activity detail recording what exactly changed
-    #     # in the group.
-    #
-    # upload.upload(uploader.get_max_image_size())
 
     if not context.get('defer_commit'):
         model.repo.commit()
@@ -269,10 +211,18 @@ def basket_element_add(context, data_dict):
 
     if pkgs is not None:
         basket_association = []
+        max_number = helpers.get_basket_config()
+
+        added_pkgs = 0
+
         for package_id in pkgs:
             new_basket_association = _basket_element_add(context, model, package_id, basket)
             if new_basket_association is not None:
                 basket_association.append(new_basket_association)
+
+                added_pkgs += 1
+                if added_pkgs >= int(max_number):
+                    return basket_association
     elif package_id is not None:
         tk.check_access('package_show', context, {'id': package_id})
         basket_association = _basket_element_add(context, model, package_id, basket)
