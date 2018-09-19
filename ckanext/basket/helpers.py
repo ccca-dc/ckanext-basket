@@ -27,3 +27,16 @@ def basket_list(user):
 
 def get_basket_config():
     return config.get('ckanext.basket.max_number_of_pkgs_to_add_to_basket', 400)
+
+
+def basket_rsc_for_pkgs(packages_list):
+    # returns all downloadable resources for a list of package_ids
+    resources_list = []
+
+    for pkg_dct in packages_list:
+        # pkg_dct = tk.get_action("package_show")(context,{"id": pkg_id})
+        for res in pkg_dct.get('resources', []):
+            if res.get("url_type") == "upload":
+                resources_list.append(res.get("url"))
+
+    return resources_list

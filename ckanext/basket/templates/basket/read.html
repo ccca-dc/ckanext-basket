@@ -1,5 +1,6 @@
 {% resource 'ccca/livicons' %}
 {% resource 'basket/basket.css' %}
+{% resource 'basket/basket_download.js' %}
 
 {% extends "page.html" %}
 
@@ -63,43 +64,21 @@
                  <tr class="active">
                    <th style="text-align: center; vertical-align: middle;"></th>
                    <th class="table-actions">
-                     <div class="btn-group basket-btn-group">
-                          <div class="btn-group basket-btn">
-                          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                          <span class="livicon-evo" data-options="
-                              name: morph-folder.svg;
-                              size: 30px;
-                              style: lines;
-                              strokeColor: #fff;
-                              eventOn: parent">
-                          </span>
-                          Home
-                          </button>
-                          <ul class="dropdown-menu" role="menu">
-                              <li>
-                             <button class="btn dropdown-btn" name="bulk_action.export" value="export" type="submit" title="{{ _('Export to Home Directory') }}">
-                               <span class="livicon-evo" data-options="
-                                   name: cloud-download.svg;
-                                   size: 30px;
-                                   style: lines;
-                                   strokeColor: #003647;
-                                   eventOn: parent">
-                               </span>
-                               {{ _('Export') }}
-                           </button></li>
-                           <li>
-                              <button class="btn dropdown-btn" name="bulk_action.clear" value="clear" type="submit" title="{{ _('Delete Packages from Home Directory') }}">
-                                <span class="livicon-evo" data-options="
-                                    name: trash.svg;
-                                    size: 30px;
-                                    style: lines;
-                                    strokeColor: #003647;
-                                    eventOn: parent">
-                                </span>
-                                {{ _('Clear') }}
-                            </button></li>
-                           </ul>
-                       </div>
+                       <div class="btn-group basket-btn-group">
+                           <button id="js_action.download" name="js_action.download" class="btn btn-primary basket-btn" title="{{ _('Download Packages from Basket') }}" data-module="basket_download" type="button"
+                             data-module-rscs_list="{{h.dump_json(
+                                       h.basket_rsc_for_pkgs(c.packages)
+                                       )}}"
+                         >
+                             <span class="livicon-evo" data-options="
+                                          name: download.svg;
+                                          size: 30px;
+                                          style: lines;
+                                          strokeColor: #fff;
+                                          eventOn: parent">
+                             </span>
+                             {{ _('Download') }}
+                         </button>
                        <div class="btn-group basket-btn">
                         <button class="btn btn-success dropdown-toggle" type="button" title="{{ _('Add Packages to existing Group') }}" data-toggle="dropdown">
                            <span class="livicon-evo" data-options="

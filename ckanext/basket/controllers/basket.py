@@ -113,6 +113,7 @@ class BasketController(base.BaseController):
         actions_in_form = set(request.params.keys())
         actions = form_names.intersection(actions_in_form)
 
+
         # If no action then just show the datasets
         if actions:
             #ie7 puts all buttons in form params but puts submitted one twice
@@ -149,6 +150,7 @@ class BasketController(base.BaseController):
                         'clear': 'basket_clear',
                         'delete': 'basket_element_remove',
                     }
+
 
                     data_dict_action = {'packages': datasets, 'basket_id': data_dict['id']}
 
