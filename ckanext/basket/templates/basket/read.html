@@ -1,6 +1,6 @@
 {% resource 'ccca/livicons' %}
 {% resource 'basket/basket.css' %}
-{% resource 'basket/basket_download.js' %}
+{% resource 'basket/basket_download' %}
 
 {% extends "page.html" %}
 
@@ -57,7 +57,7 @@
           {% block packages_list %}
             {% if c.packages %}
             <form method="POST" data-module="basic-form">
-             <table class="table table-hover table-edit-hover" data-module="table-selectable-rows">
+             <table id="tab-basket" class="table table-hover table-edit-hover" data-module="table-selectable-rows">
                <col width="8">
                <col width="120">
                <thead>

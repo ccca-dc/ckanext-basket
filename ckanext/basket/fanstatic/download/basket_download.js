@@ -16,18 +16,18 @@ ckan.module('basket_download', function ($) {
       },
 
       _DownloadResources: function() {
-        var link = document.createElement('a');
+          var link = document.createElement('a');
 
-        link.setAttribute('download', null);
-        link.style.display = 'none';
+          link.setAttribute('download', null);
+          link.style.display = 'none';
 
-        document.body.appendChild(link);
+          document.body.appendChild(link);
 
-        for (var i = 0; i < this.options.rscs_list.length; i++) {
-            link.setAttribute('href', this.options.rscs_list[i]);
-            link.click();
-        }
-        document.body.removeChild(link);
+          for (var i = 0; i < this.options.rscs_list.length; i++) {
+              link.setAttribute('href', this.options.rscs_list[i]);
+              link.click();
+          }
+          document.body.removeChild(link);
       }
   };
 });
