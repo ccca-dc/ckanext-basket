@@ -12,7 +12,7 @@
 
 {% block pre_primary %}
   <h1 class="heading">
-    {{ c.basket_dict.name }}
+    {{ c.basket_dict.name }} ({{c.basket_dict['packages']|length}})
     <span class="livicon-evo" data-options="
         name: box.svg;
         eventOn: grandparent;
