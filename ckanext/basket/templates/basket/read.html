@@ -136,10 +136,10 @@
                <tbody>
                  {% for package in c.packages %}
                    {% set truncate = truncate or 180 %}
-                   {% set truncate_title = truncate_title or 80 %}
+                   {% set truncate_title = truncate_title or 180 %}
                    {% set title = package.title or package.name %}
                    {% set notes = h.markdown_extract(package.notes, extract_length=truncate) %}
-                   <tr>
+                   <tr id="{{ package.id }}">
                      <td style="text-align: center;">
                        <h3><input type="checkbox" name="dataset_{{ package.id }}"></h3>
                      </td>
