@@ -1,0 +1,6 @@
+{% ckan_extends %}
+
+{% block notes %}
+{{super()}}
+{{ h.snippet('snippets/basket_button.html', package=package, redirect_url=h.current_url()) }}
+{% endblock %}

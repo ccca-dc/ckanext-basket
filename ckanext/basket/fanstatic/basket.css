@@ -1,0 +1,66 @@
+@media only screen and (max-width: 600px) {
+    .search-form h2 {
+        clear: right;
+    }
+}
+@media only screen and (max-width: 400px) {
+    .basket-heading {
+        clear: right;
+    }
+}
+.basket-btn-group {
+    width: 100% !important;
+}
+.basket-btn {
+    width: 33.33%;
+    overflow-wrap: break-word;
+}
+.basket-btn button {
+    width:100%;
+}
+@media (min-width: 1200px) {
+    .basket-btn-group {
+        width: 50% !important;
+    }
+}
+@media (max-width: 400px) {
+    .basket-btn {
+        overflow-wrap: break-word;
+    }
+}
+
+.add-all-packages-btn {
+    margin-bottom: 10px !important;
+    margin-left: 10px !important;
+}
+.dropdown-btn {
+    text-align: left !important;
+    background-color: #fff;
+}
+.dropdown-btn:hover {
+    background-color: #003647;
+    color: white !important;
+}
+.dropdown-btn:hover span {
+    color: #fff;
+}
+.org-basket-btn {
+    display:inline-block;
+    margin-bottom: 10px !important;
+}
+.scrollable-menu {
+    height: auto;
+    max-height: 250px;
+    overflow-x: hidden;
+}
+@media (min-width: 600px) {
+    .scrollable-menu {
+        width: 400px;
+    }
+}
+.heading-li {
+    padding-left:5px;
+}
+.element-li {
+    font-weight:100 !important;
+}

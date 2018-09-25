@@ -1,0 +1,5 @@
+{% ckan_extends %}
+
+{% block dataset_basket %}
+{{ h.snippet('snippets/basket_button.html', package=pkg, redirect_url=h.current_url()) }}
+{% endblock %}

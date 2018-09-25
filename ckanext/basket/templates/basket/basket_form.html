@@ -1,0 +1,45 @@
+{% import 'macros/form.html' as form %}
+
+<form id="group-edit" class="dataset-form form-horizontal" method="post" data-module="basic-form" enctype="multipart/form-data">
+    {{ form.input('name', label=_('Name'), id='field-name', value=data.name, error=errors.name, placeholder=_('eg. My Basket'), classes=['control-medium'], attrs={"class": "form-control"}) }}
+    {{ form.textarea('description', label=_('Description'), id='field-description', value=data.description, error=errors.description, placeholder=_('A little information about my basket...'), classes=['control-full', 'control-large'], attrs={"class": "form-control"}) }}
+    {{ form.select(
+    'element_type',
+    id='field-element_type',
+    label=_('Element Type'),
+    options=[{'name':'Package', 'value': 'package'},{'name': 'Subsets', 'value': 'subsets'}],
+    selected=data[element_type],
+    error=errors[element_type],
+    classes=['control-medium'],
+    attrs=field.form_attrs if 'form_attrs' in field else {"class": "form-control"}
+    )}}
+
+
+    <div class="form-actions">
+        {% if data.id %}
+            {% block delete_button %}
+            {% if h.check_access('basket_purge', {'id': data.id}) and action=='edit'  %}
+            {% set locale = h.dump_json({'content': _('Are you sure you want to delete this Basket?')}) %}
+            <a class="btn btn-danger pull-left" href="{% url_for controller='ckanext.basket.controllers.basket:BasketController', action='delete', id=data.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}">
+                <span class="livicon-evo" data-options="
+                    name: box-delete.svg;
+                    size: 30px;
+                     style: lines;
+                     strokeColor: #fff;
+                     eventOn: parent">
+                </span>
+                {% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
+            {% endif %}
+            {% endblock %}
+        {% endif %}
+        <button class="btn btn-primary" name="save" type="submit">
+            <span class="livicon-evo" data-options="
+                name: save.svg;
+                size: 30px;
+                 style: lines;
+                 strokeColor: #fff;
+                 eventOn: parent">
+            </span>
+            {% block save_text %}{{ _('Save Basket') }}{% endblock %}</button>
+    </div>
+</form>

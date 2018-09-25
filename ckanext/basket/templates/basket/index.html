@@ -1,0 +1,52 @@
+{% resource 'ccca/livicons' %}
+{% resource 'basket/basket.css' %}
+
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _('Baskets') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  <li class="active">{% link_for _('Baskets'), controller='ckanext.basket.controllers.basket:BasketController', action='index' %}</li>
+{% endblock %}
+
+{% block primary %}
+  <div class="primary col-md-12">
+      {% block primary_content %}
+      <article class="module">
+        {% block page_header %}
+        {% endblock %}
+        <div class="module-content">
+            <div class="page_primary_action">
+                {% if h.check_access('basket_create') %}
+                  {% link_for _('Add Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='new', class_='btn btn-success pull-right', icon='plus-sign-alt' %}
+                  <div class="helptip pull-right">
+                    <i style="padding-right:15px" class="icon-question-sign icon-2x"></i>
+                      <span class="helptiptext">You can create baskets to memorize and group datasets of special importance for you. Furthermore, support tools will be provided soon to export  your basket data easily.</span>
+                  </div>
+                {% endif %}
+            </div>
+
+        {% block primary_content_inner %}
+          <h1 class="hide-heading basket-heading">{{ _('Baskets') }}</h1>
+          {% block basket_list %}
+            <ul class="{{ list_class or 'dataset-list unstyled' }}">
+              {% for basket in c.page.items %}
+                {% snippet 'basket/basket_item.html', basket=basket %}
+              {% endfor %}
+            </ul>
+            {% if c.page.items|length == 0 %}
+              <p class="empty">
+                {{ _('There are currently no baskets for this user') }}.
+                {% if h.check_access('group_create') %}
+                  {% link_for _('How about creating one?'), controller='ckanext.basket.controllers.basket:BasketController', action='new' %}</a>
+                {% endif %}
+              </p>
+            {% endif %}
+          {% endblock %}
+      </div>
+          </article>
+        {% endblock %}
+      </div>
+    {% endblock %}
+
+{% endblock %}

@@ -31,6 +31,8 @@ class Basket(Base,
     """
     __tablename__ = 'basket'
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
+    name = Column('name', types.UnicodeText)
+    description = Column('description', types.UnicodeText)
     user_id = Column('user_id', types.UnicodeText)
     element_type = Column(types.UnicodeText, default=u"package")
     packages = relationship("BasketAssociation")
@@ -51,6 +53,8 @@ class Basket(Base,
     def as_dict(self, with_terms=False):
         return {
             'id': self.id,
+            'name': self.name,
+            'description': self.description,
             'user_id': self.user_id,
             'element_type': self.element_type,
             'packages': [pkg.package_id for pkg in self.packages],

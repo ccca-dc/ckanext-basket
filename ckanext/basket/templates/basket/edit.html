@@ -1,0 +1,21 @@
+{% extends "basket/base_form_page.html" %}
+
+{% block breadcrumb_content %}
+  <li>{% link_for _('Baskets'), controller='ckanext.basket.controllers.basket:BasketController', action='index' %}</li>
+  {% block breadcrumb_content_inner %}
+    <li>{% link_for basket.name, controller='ckanext.basket.controllers.basket:BasketController', action='read', id=basket.id %}</li>
+    <li class="active">{% link_for _('Manage'), controller='ckanext.basket.controllers.basket:BasketController', action='edit', id=basket.id %}</li>
+  {% endblock %}
+{% endblock %}
+
+{% block page_heading_class %}hide-heading{% endblock %}
+{% block page_heading %}
+{{ _('Edit Basket') }}
+<span class="livicon-evo" data-options="
+    name: gears.svg;
+    eventOn: grandparent;
+    drawOnViewport: true
+"></span>
+{% endblock %}
+{% block secondary_content %}
+{% endblock %}

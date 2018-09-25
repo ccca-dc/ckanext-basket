@@ -1,0 +1,33 @@
+{% resource 'ccca/livicons' %}
+
+{% extends "basket/edit_base.html" %}
+
+{% block breadcrumb_content %}
+  <li>{{ h.nav_link(_('Baskets'), controller='ckanext.basket.controllers.basket:BasketController', action='index') }}</li>
+  <li class="active">{% block breadcrumb_link %}{{ h.nav_link(_('Add a Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='new') }}{% endblock %}</li>
+{% endblock %}
+
+{% block primary %}
+  <div class="primary col-md-12">
+    {% block primary_content %}
+      <article class="module">
+        {% block page_header %}
+        {% endblock %}
+        <div class="module-content">
+          {% if self.page_primary_action() | trim %}
+            <div class="page_primary_action">
+              {% block page_primary_action %}{% endblock %}
+            </div>
+          {% endif %}
+          {% block primary_content_inner %}
+            <h1 class="{% block page_heading_class %}page-heading{% endblock %}">{% block page_heading %}{{ _('Group Form') }}{% endblock %}</h1>
+            {% block form %}
+              {% include "basket/basket_form.html" %}
+             {#} {{ c.form | safe }}{#}
+            {% endblock %}
+          {% endblock %}
+        </div>
+      </article>
+    {% endblock %}
+</div>
+{% endblock %}

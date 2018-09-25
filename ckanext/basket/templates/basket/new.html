@@ -1,0 +1,24 @@
+{% extends "basket/base_form_page.html" %}
+
+{#}{% block breadcrumb_content %}
+  <li>{{ h.nav_link(_('Baskets'), controller='ckanext.basket.controllers.basket:BasketController', action='index') }}</li>
+  <li class="active">{% block breadcrumb_link %}{{ h.nav_link(_('Add a Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='new') }}{% endblock %}</li>
+{% endblock %}{#}
+
+{% block subtitle %}{{ _('Create a Basket') }}{% endblock %}
+
+{% block breadcrumb_link %}{{ h.nav_link(_('Create a Basket'), controller='ckanext.basket.controllers.basket:BasketController', action='edit', id=c.basket.id) }}{% endblock %}
+
+{% block page_heading %}
+{{ _('Create a Basket') }}
+<span class="livicon-evo" data-options="
+    name: box-add.svg;
+    eventOn: grandparent;
+    drawOnViewport: true
+"></span>
+{% endblock %}
+
+{% block page_header %}{% endblock %}
+
+{% block secondary_content %}
+{% endblock %}

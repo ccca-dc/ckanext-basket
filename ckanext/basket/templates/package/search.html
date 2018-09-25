@@ -1,0 +1,41 @@
+{% resource 'ccca/livicons' %}
+{% resource 'basket/basket.css' %}
+
+{% ckan_extends %}
+
+{% block page_primary_action %}
+
+{% set baskets = h.basket_list_for_pkg(c.user, None) %}
+
+{% set max_pkgs = h.get_basket_config() %}
+
+{% if baskets|length > 0 %}
+<div class="dropdown pull-right big-media">
+  <a href="#" title="{{ _('Add all Packages to Basket') }}" class="btn btn-sm btn-primary dropdown-toggle add-all-packages-btn" data-toggle="dropdown">
+      <span class="livicon-evo" data-options="
+         name: box-add.svg;
+         size: 33px;
+         style: lines;
+         strokeColor: #fff;
+         eventType: click;">
+      </span>
+  </a>
+  <ul class="dropdown-menu">
+      {% for basket in baskets %}
+        <li>
+            <a href="{{ h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='add_packages_to_basket', basket_id=basket.id, fields_grouped=c.fields_grouped, request_params=dict(request.params))}}" title="Add all Packages to {{basket.name}} (max. {{ max_pkgs }})">
+              <span class="livicon-evo" data-options="
+              name: box.svg;
+              size: 20px;
+              style: lines;
+              strokeColor: #003647;
+              eventType: none;
+          "></span>
+          {{ basket.name }}
+          </a>
+        </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endblock %}
