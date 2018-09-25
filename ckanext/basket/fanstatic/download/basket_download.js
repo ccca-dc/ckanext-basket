@@ -9,29 +9,34 @@ ckan.module('basket_download', function ($) {
         var self = this;
         var options = this.options;
         $.proxyAll(this, /_on/);
-        // Add click event
-        $(':checkbox:checked').prop('checked',false);
+        // Uncheck all checkboxes (table-selected class missing after reload)
+        $(':checkbox:checked').removeAttr('checked');
         var table = $('#tab-basket').DataTable({"ordering": false});
+        // Add click event
         document.getElementById('js_action.download').addEventListener('click', function(e){
             self._DownloadResources();
         });
       },
 
       _DownloadResources: function() {
+          // Reload table (maybe checkboxes changed)
           var table = $('#tab-basket').DataTable();
+          // Get seleted rows
           var sel_pkg_ids = $.map(table.rows('.table-selected').ids(), function (item) {
               return item;
           });
 
+          // Filter resources for selected packages
           var results = this.options.rscs_list.filter(
-              function(e) {
-                  return e.indexOf(this) > -1;
+              function(e_rsc) {
+                  let in_list = false;
+                  this.forEach(e_pkg => {
+                      in_list = in_list || e_rsc.includes(e_pkg);
+                  });
+                  return in_list;
               },
               sel_pkg_ids
           );
-
-          console.log(sel_pkg_ids);
-          console.log(results);
 
           // Open download dialogues for selected resources
           var link = document.createElement('a');
