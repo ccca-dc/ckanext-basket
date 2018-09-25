@@ -12,6 +12,7 @@
                 drawOnViewport: true
             "></span>
               {{ h.link_to(basket.get('name', ''), h.url_for(controller='ckanext.basket.controllers.basket:BasketController', action='read', id=basket.id)) }}
+               ({{basket.get('packages', '')|length}})
             {% endblock %}
             {% block heading_meta %}
             {% endblock %}
