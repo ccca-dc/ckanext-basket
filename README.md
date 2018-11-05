@@ -11,8 +11,8 @@ This plugin allows users to create baskets. Users can create baskets to memorize
 
 ![Edit Basket](doc/img/basket_edit.png)
 
-
 Basket symbol in the header:
+
 ![Header Basket](doc/img/basket_header.png)
 ------------
 API functions
