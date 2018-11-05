@@ -66,7 +66,7 @@ def basket_update(context, data_dict):
     basket = Basket.get(id)
     context["basket"] = basket
     if basket is None:
-        raise tk.ObjectNotFound('Baset was not found.')
+        raise tk.ObjectNotFound('Basket was not found.')
 
     tk.check_access('basket_update', context, data_dict)
 
@@ -162,7 +162,7 @@ def basket_show(context, data_dict):
 def basket_element_list(context, data_dict):
     """List all elements in basket
 
-    :param id: The id of the package
+    :param id: The id of the basket
     :type id: string
     :returns:
     """
