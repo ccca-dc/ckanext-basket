@@ -36,7 +36,7 @@ the newly created basket.
 **Return type:**
 dictionary
 
-#### basket_update(context, data_dict):
+#### basket_update(context, data_dict)
 
 Update a basket. You can only update your own basket.
 
@@ -51,7 +51,7 @@ the updated basket.
 **Return type:**
 dictionary
 
-#### basket_purge(context, data_dict):
+#### basket_purge(context, data_dict)
 Purge a basket. You can only purge your own basket.
 
 **Parameters:**
@@ -111,7 +111,7 @@ The basket_id and the package_id
 **Return type**
 dictionary
 
-#### basket_element_remove(context, data_dict):
+#### basket_element_remove(context, data_dict)
 Remove one or more elements from a basket. You are only allowed to remove elements from your own basket.
 
 **Parameters:**
