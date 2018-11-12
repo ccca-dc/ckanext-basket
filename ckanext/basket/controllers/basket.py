@@ -96,6 +96,8 @@ class BasketController(base.BaseController):
         return tk.render('basket/index.html', {'title': 'Baskets'})
 
     def read(self, id):
+        # gets called for individual basket page
+        # export, clear, delete and group buttons on read page call this method
 
         context = {'model': model, 'session': model.Session,
                    'user': c.user}
@@ -114,7 +116,7 @@ class BasketController(base.BaseController):
         actions = form_names.intersection(actions_in_form)
 
 
-        # If no action then just show the datasets
+        # If no action (no buttons pressed) then just show the datasets
         if actions:
             #ie7 puts all buttons in form params but puts submitted one twice
             for key, value in dict(request.params.dict_of_lists()).items():
@@ -131,7 +133,6 @@ class BasketController(base.BaseController):
             for param in request.params:
                 if param.startswith('dataset_'):
                     datasets.append(param[8:])
-
 
             if len(datasets) > 0:
                 if action == 'group':
@@ -180,6 +181,7 @@ class BasketController(base.BaseController):
             # Do not query for the group datasets when dictizing, as they will
             # be ignored and get requested on the controller anyway
 
+            # get basket and packages info and all groups, to which the user can add datasets
             c.basket_dict = tk.get_action('basket_show')(context, data_dict)
             c.packages = tk.get_action('basket_element_list')(context, data_dict)
             users_groups = get_action('group_list_authz')(context, {})
@@ -191,7 +193,6 @@ class BasketController(base.BaseController):
             dict_group_list['groups'] = [group['name'] for group in users_groups]
             c.groups = get_action('group_list')(context, dict_group_list)
 
-            # c.group = context['group']
         except (NotFound, NotAuthorized):
             abort(404, _('Basket not found'))
 
@@ -217,7 +218,6 @@ class BasketController(base.BaseController):
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'action': 'new'}
 
-        # self._setup_template_variables(context, data, group_type=group_type)
         return tk.render('basket/new.html', vars)
 
     def _save_new(self, context):

@@ -1,6 +1,7 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckanext.basket import helpers
+import ckan.plugins.toolkit as tk
 
 
 class BasketPlugin(plugins.SingletonPlugin):
@@ -9,6 +10,7 @@ class BasketPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IAuthFunctions, inherit=True)
     plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.ITemplateHelpers)
+    plugins.implements(plugins.IPackageController, inherit=True)
 
     # IConfigurer
     def update_config(self, config_):
@@ -28,7 +30,8 @@ class BasketPlugin(plugins.SingletonPlugin):
                     'basket_element_list': action.basket_element_list,
                     'basket_element_remove': action.basket_element_remove,
                     'basket_export': action.basket_export,
-                    'basket_clear': action.basket_clear}
+                    'basket_clear': action.basket_clear,
+                    'package_basket_list': action.package_basket_list}
         return actions
 
     # IAuthFunctions
@@ -92,3 +95,11 @@ class BasketPlugin(plugins.SingletonPlugin):
             'get_basket_config': helpers.get_basket_config,
             'basket_rsc_for_pkgs': helpers.basket_rsc_for_pkgs
             }
+
+    # IPackageController
+    def after_delete(self, context, pkg_dict):
+        # remove pkg from all baskets
+        baskets = tk.get_action('package_basket_list')(context, {'id': pkg_dict['id']})
+
+        for basket in baskets:
+            tk.get_action('basket_element_remove')(context, {'basket_id': basket, 'package_id': pkg_dict['id']})
