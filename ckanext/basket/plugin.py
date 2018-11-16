@@ -10,7 +10,6 @@ class BasketPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IAuthFunctions, inherit=True)
     plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.ITemplateHelpers)
-    plugins.implements(plugins.IPackageController, inherit=True)
 
     # IConfigurer
     def update_config(self, config_):
@@ -96,10 +95,4 @@ class BasketPlugin(plugins.SingletonPlugin):
             'basket_rsc_for_pkgs': helpers.basket_rsc_for_pkgs
             }
 
-    # IPackageController
-    def after_delete(self, context, pkg_dict):
-        # remove pkg from all baskets
-        baskets = tk.get_action('package_basket_list')(context, {'id': pkg_dict['id']})
-
-        for basket in baskets:
-            tk.get_action('basket_element_remove')(context, {'basket_id': basket, 'package_id': pkg_dict['id']})
+    
