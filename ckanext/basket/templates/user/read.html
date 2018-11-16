@@ -3,7 +3,7 @@
 
 {% ckan_extends %}
 
-{% block page_primary_action %}
+{% block primary_content_inner %}
     {% if c.user_dict.name == c.user %}
         {% set baskets = h.basket_list_for_pkg(c.user, None) %}
         {% set package_ids = [] %}
