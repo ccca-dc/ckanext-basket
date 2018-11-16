@@ -363,7 +363,6 @@ def package_basket_list(context, data_dict):
     :type id: string
     :returns:
     """
-    tk.check_access('basket_owner_only', context, data_dict)
     model = context['model']
 
     name_or_id = _get_or_bust(data_dict, 'id')
