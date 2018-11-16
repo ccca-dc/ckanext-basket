@@ -1,6 +1,7 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckanext.basket import helpers
+import ckan.plugins.toolkit as tk
 
 
 class BasketPlugin(plugins.SingletonPlugin):
@@ -28,7 +29,8 @@ class BasketPlugin(plugins.SingletonPlugin):
                     'basket_element_list': action.basket_element_list,
                     'basket_element_remove': action.basket_element_remove,
                     'basket_export': action.basket_export,
-                    'basket_clear': action.basket_clear}
+                    'basket_clear': action.basket_clear,
+                    'package_basket_list': action.package_basket_list}
         return actions
 
     # IAuthFunctions
@@ -92,3 +94,5 @@ class BasketPlugin(plugins.SingletonPlugin):
             'get_basket_config': helpers.get_basket_config,
             'basket_rsc_for_pkgs': helpers.basket_rsc_for_pkgs
             }
+
+    

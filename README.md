@@ -1,49 +1,127 @@
-.. You should enable this project on travis-ci.org and coveralls.io to make
-   these badges work. The necessary Travis and Coverage config files have been
-   generated for you.
-
-.. image:: https://travis-ci.org/sureL89/ckanext-basket.svg?branch=master
-    :target: https://travis-ci.org/sureL89/ckanext-basket
-
-.. image:: https://coveralls.io/repos/sureL89/ckanext-basket/badge.svg
-  :target: https://coveralls.io/r/sureL89/ckanext-basket
-
-.. image:: https://pypip.in/download/ckanext-basket/badge.svg
-    :target: https://pypi.python.org/pypi//ckanext-basket/
-    :alt: Downloads
-
-.. image:: https://pypip.in/version/ckanext-basket/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-basket/
-    :alt: Latest Version
-
-.. image:: https://pypip.in/py_versions/ckanext-basket/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-basket/
-    :alt: Supported Python versions
-
-.. image:: https://pypip.in/status/ckanext-basket/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-basket/
-    :alt: Development Status
-
-.. image:: https://pypip.in/license/ckanext-basket/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-basket/
-    :alt: License
-
-=============
 ckanext-basket
 =============
 
-.. Put a description of your extension here:
-   What does it do? What features does it have?
-   Consider including some screenshots or embedding a video!
+This plugin allows users to create baskets. Users can create baskets to memorize and group datasets of special importance. Furthermore, user can download their basket data easily.
 
+![Baskets](doc/img/basket_index.png)
+
+![Create Basket](doc/img/basket_create.png)
+
+![Show Basket](doc/img/basket.png)
+
+![Edit Basket](doc/img/basket_edit.png)
+
+Basket symbol in the header:
+
+![Header Basket](doc/img/basket_header.png)
+------------
+API functions
+------------
+
+You must be logged in in order to use any basket api function.
+
+##### basket_create(context, data_dict)
+
+Create a new basket. Normal users can only create baskets for themselves, thus Parameter "user_id" will be ignored.
+
+**Parameters:**
+* **user_id** (string) - The id of the user to create the basket for (only admin)
+* **name** (string) - The name of the basket
+* **description** (string) - Description of the basket
+* **element_type** (string) - The type of the basket elements (e.g. package, resource, subset) (optional)
+
+**Returns:**
+the newly created basket.
+
+**Return type:**
+dictionary
+
+#### basket_update(context, data_dict)
+
+Update a basket. You can only update your own basket.
+
+For further parameters see basket_create().
+
+**Parameters:**
+* **id** (string) - The id of the basket
+
+**Returns:**
+the updated basket.
+
+**Return type:**
+dictionary
+
+#### basket_purge(context, data_dict)
+Purge a basket. You can only purge your own basket.
+
+**Parameters:**
+* **id** (string) - The id of the basket
+
+**Returns:**
+/
+
+#### basket_list(context, data_dict)
+List all baskets for user. Only sysadmins can see other baskets, everyone else can only list his/her own baskets.
+
+**Parameters:**
+* **user_id** (string) - The id of the user for whom to list the baskets (only admin)
+
+**Returns:**
+a user's baskets.
+
+**Return type**
+list of dicts
+
+#### basket_show(context, data_dict)
+Show basket with or without its elements. You are only allowed to do a basket_show of your own basket.
+
+**Parameters:**
+* **id** (string) - The id of the basket
+* **include_elements** (boolean) - default False (optional)
+
+**Returns:**
+the requested basket.
+
+**Return type:**
+dictionary
+
+#### basket_element_list(context, data_dict)
+List all elements in basket. You are only allowed to list elements from your own basket.
+
+**Parameters:**
+* **id** (string) - The id of the basket
+
+**Returns:**
+a dataset's baskets.
+
+**Return type**
+list of dicts
+
+#### basket_element_add(context, data_dict)
+Add one or more elements to a basket. You are only allowed to add elements to your own basket.
+
+**Parameters:**
+* **basket_id** (string) - The id of the basket
+* **packages** (list of strings) - The id of the packages
+* **package_id** (string) - The id of the package
+
+**Returns:**
+The basket_id and the package_id
+
+**Return type**
+dictionary
+
+#### basket_element_remove(context, data_dict)
+Remove one or more elements from a basket. You are only allowed to remove elements from your own basket.
+
+**Parameters:**
+* **basket_id** (string) - The id of the basket
+* **packages** (list of string) - The id of the packages
+* **package_id:** (string) - The id of the package
 
 ------------
 Requirements
 ------------
-
-For example, you might want to mention here which versions of CKAN this
-extension works with.
-
 
 ------------
 Installation

@@ -66,7 +66,7 @@ def basket_update(context, data_dict):
     basket = Basket.get(id)
     context["basket"] = basket
     if basket is None:
-        raise tk.ObjectNotFound('Baset was not found.')
+        raise tk.ObjectNotFound('Basket was not found.')
 
     tk.check_access('basket_update', context, data_dict)
 
@@ -162,7 +162,7 @@ def basket_show(context, data_dict):
 def basket_element_list(context, data_dict):
     """List all elements in basket
 
-    :param id: The id of the package
+    :param id: The id of the basket
     :type id: string
     :returns:
     """
@@ -353,3 +353,32 @@ def basket_clear(context, data_dict):
         )
 
     # ls_home_dir = tk.get_action("localimp_show_files")(context, {})
+
+
+@ckan.logic.side_effect_free
+def package_basket_list(context, data_dict):
+    """List all baskets a package is in
+
+    :param id: The id of the package
+    :type id: string
+    :returns:
+    """
+    tk.check_access('basket_owner_only', context, data_dict)
+    model = context['model']
+
+    name_or_id = _get_or_bust(data_dict, 'id')
+    id = tk.get_action('package_show')(context, {'id': name_or_id})['id']
+    user_id = tk.get_action('user_show')({}, {'id': context.get('user')})['id']
+    print("after user show")
+
+    # get all BasketAssociations for the deleted package in which the basket belongs to the user
+    q = model.Session.query(BasketAssociation, Basket) \
+        .filter(BasketAssociation.package_id == id) \
+        .filter(Basket.user_id == user_id) \
+        .join(Basket)
+
+    baskets = []
+    for basket_association, basket in q.all():
+        baskets.append(basket.id)
+
+    return baskets
