@@ -9,8 +9,11 @@
 {% endif %}
 
 {% if baskets|length > 0 %} {# If User has any baskets at all #}
+
+
   <div class="dropdown btn-group pull-right">
-    <a href="#" title="{% if add %}{{ _('Add Dataset to Basket') }}{% else %}{{ _('Remove Dataset from Basket') }}{% endif %}" class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+    <span data-intro-group="explain-resource" data-tooltipclass='introjs-ttip'  data-intro='Here you can add/remove the dataset your resource belongs to to/from a basket' data-step="5">
+      <a href="#" title="{% if add %}{{ _('Add Dataset to Basket') }}{% else %}{{ _('Remove Dataset from Basket') }}{% endif %}" class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
         <span class="livicon-evo" data-options="
            name: box-{% if add %}add{% else %}extract{% endif %}.svg;
            size: 30px;
@@ -19,6 +22,7 @@
            eventType: click;">
         </span>
     </a>
+    </span>
     <ul class="dropdown-menu">
         {% for basket in baskets %}
           <li>
@@ -38,4 +42,5 @@
       {% endfor %}
     </ul>
 </div>
+
 {% endif %}  {# If User has any baskets at all #}
